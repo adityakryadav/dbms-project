@@ -1,2 +1,4 @@
-# c-Codes
-radhe radhe
+# DBMS project
+— Aditya
+— Shambhavi 
+— Pranjal 
