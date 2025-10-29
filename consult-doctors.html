@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Consult Doctors - Genricycle</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        .page-wrapper { max-width: 1000px; margin: 0 auto; padding: 2rem 20px; }
+        .simple-card { background: #fff; border: 1px solid rgba(46,125,50,0.12); border-radius: 12px; padding: 1.5rem; box-shadow: 0 4px 12px rgba(0,0,0,0.06); }
+        .back-link { display: inline-flex; align-items: center; gap: .5rem; text-decoration: none; color: #2E7D32; font-weight: 600; margin-bottom: 1rem; }
+        .hero { background: linear-gradient(135deg, #e8f5e9 0%, #e3f2fd 100%); border: 1px solid rgba(46,125,50,0.12); border-radius: 16px; padding: 2rem; display: flex; align-items: center; justify-content: space-between; gap: 2rem; }
+        .hero-text { max-width: 560px; }
+        .hero-title { font-size: 1.9rem; color: #2c3e50; margin: 0 0 .5rem; font-weight: 800; }
+        .hero-sub { font-size: 1.1rem; color: #2c3e50; margin: 0; }
+        .price-pill { display: inline-block; margin-top: .75rem; background: #2E7D32; color: #fff; padding: .4rem .75rem; border-radius: 999px; font-weight: 700; }
+        .hero-img { flex: 1 1 360px; display: flex; align-items: center; justify-content: center; }
+        .hero-img img { max-width: 100%; height: auto; object-fit: contain; border-radius: 12px; background: #fff; border: 1px solid rgba(0,0,0,0.06); }
+        .benefits { margin-top: 1.5rem; }
+        .benefits-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 2rem; align-items: start; }
+        .benefit { text-align: center; padding: 1rem; }
+        .benefit i { font-size: 48px; color: #26a69a; margin-bottom: .75rem; }
+        .benefit h3 { font-size: 1.2rem; color: #2c3e50; margin: .5rem 0; }
+        .benefit p { color: #546e7a; line-height: 1.6; font-size: .98rem; }
+        @media (max-width: 1000px) { .benefits-grid { grid-template-columns: repeat(2, 1fr); } }
+        @media (max-width: 560px) { .benefits-grid { grid-template-columns: 1fr; } }
+        .faq { margin-top: 2rem; }
+        .faq h2 { margin-bottom: 1rem; }
+        .faq details { background: #fff; border: 1px solid rgba(46,125,50,0.12); border-radius: 10px; padding: 1rem 1rem; margin-bottom: .75rem; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
+        .faq summary { cursor: pointer; font-weight: 700; color: #2c3e50; outline: none; }
+        .faq p { margin: .75rem 0 0; color: #455a64; line-height: 1.6; }
+        @media (max-width: 800px) { .hero { flex-direction: column; text-align: center; } .hero-text { max-width: none; } }
+    </style>
+</head>
+<body>
+    <div class="page-wrapper">
+        <a class="back-link" href="index.html"><i class="fas fa-arrow-left"></i> Back to Home</a>
+        <section class="hero">
+            <div class="hero-text">
+                <h1 class="hero-title">Online doctor consultation with qualified doctors</h1>
+                <p class="hero-sub">Get expert medical advice from the comfort of your home.</p>
+                <div class="price-pill">Starting at ₹199</div>
+            </div>
+            <div class="hero-img">
+                <img src="doctor-tablet-and-talk-with-woman-at-hospital-for-medical-results-advice-and-treatment-plan.webp" alt="Doctor consulting patient online" />
+            </div>
+        </section>
+
+        <section class="benefits simple-card">
+            <div class="benefits-grid">
+                <div class="benefit">
+                    <i class="fas fa-shield-halved"></i>
+                    <h3>100% Confidential</h3>
+                    <p>All advice & consultations are completely confidential. You can also delete chats whenever you want.</p>
+                </div>
+                <div class="benefit">
+                    <i class="fas fa-award"></i>
+                    <h3>Certified Doctors</h3>
+                    <p>We offer quality healthcare through our network of certified and experienced doctors.</p>
+                </div>
+                <div class="benefit">
+                    <i class="fas fa-mobile-screen"></i>
+                    <h3>Convenience</h3>
+                    <p>Forget the hassle of long queues and rush hour. Seek expert opinion anytime, anywhere.</p>
+                </div>
+                <div class="benefit">
+                    <i class="fas fa-wallet"></i>
+                    <h3>Cost Effective</h3>
+                    <p>Affordable medical assistance for non‑urgent queries. Transparent pricing with no hidden fees.</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="faq">
+            <h2>Frequently Asked Questions</h2>
+            <details>
+                <summary>How quickly can I speak to a doctor?</summary>
+                <p>Most consultations start within 10–15 minutes depending on doctor availability. You’ll receive a confirmation as soon as a doctor is assigned.</p>
+            </details>
+            <details>
+                <summary>Are my consultations confidential?</summary>
+                <p>Yes. All chats and calls are encrypted and confidential. Only you and your assigned doctor can access your consultation details.</p>
+            </details>
+            <details>
+                <summary>Can I get a prescription after the consultation?</summary>
+                <p>In most cases, yes. If the doctor deems it medically appropriate, a digital prescription will be provided after your consultation.</p>
+            </details>
+            <details>
+                <summary>What specialities are available?</summary>
+                <p>We cover General Medicine, Pediatrics, Dermatology, Gynecology, ENT, Psychiatry, and more. Your query is routed to the right specialist.</p>
+            </details>
+            <details>
+                <summary>What if it’s an emergency?</summary>
+                <p>Online consultations are not for emergencies. Please call local emergency services or visit the nearest hospital immediately.</p>
+            </details>
+        </section>
+    </div>
+</body>
+</html>
+

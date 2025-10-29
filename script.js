@@ -4,6 +4,7 @@ let currentUser = null;
 let cart = [];
 let allProducts = [];
 let filteredProducts = [];
+const DEFAULT_VISIBLE_COUNT = 15;
 
 // DOM elements
 const authButtons = document.getElementById('authButtons');
@@ -15,6 +16,7 @@ const searchBtn = document.querySelector('.search-btn');
 const productsGrid = document.getElementById('productsGrid');
 const searchResultsInfo = document.getElementById('searchResultsInfo');
 const resultsCount = document.getElementById('resultsCount');
+const filtersSidebar = document.getElementById('filtersSidebar');
 
 // Initialize the app
 document.addEventListener('DOMContentLoaded', function() {
@@ -36,6 +38,17 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Initialize search functionality
     initializeSearch();
+
+    // Initial render: show first 15 generic medicines by default
+    filteredProducts = getDefaultProducts();
+    displayProducts();
+    updateSearchResultsInfo();
+
+    // Navigate to Generic Medicines section by default
+    const genericSection = document.getElementById('generic-medicines');
+    if (genericSection) {
+        genericSection.scrollIntoView({ behavior: 'auto', block: 'start' });
+    }
 });
 
 // Check login status
@@ -94,6 +107,7 @@ function initializeProducts() {
             rating: 4.2,
             reviews: 128,
             category: 'Homeopathic',
+            brand: 'Boiron',
             image: 'https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=200&h=200&fit=crop&crop=center'
         },
         {
@@ -105,6 +119,7 @@ function initializeProducts() {
             rating: 4.8,
             reviews: 256,
             category: 'Pain Relief',
+            brand: 'Bell\'s',
             image: 'https://images.unsplash.com/photo-1559757148-5c350d0d3c56?w=200&h=200&fit=crop&crop=center'
         },
         {
@@ -116,6 +131,7 @@ function initializeProducts() {
             rating: 4.1,
             reviews: 89,
             category: 'Antihistamine',
+            brand: 'Cipla',
             image: 'https://images.unsplash.com/photo-1587854692152-cbe660dbde88?w=200&h=200&fit=crop&crop=center'
         },
         {
@@ -127,6 +143,7 @@ function initializeProducts() {
             rating: 4.6,
             reviews: 342,
             category: 'Prescription',
+            brand: 'Semglee',
             image: 'https://images.unsplash.com/photo-1576671081837-49000212a370?w=200&h=200&fit=crop&crop=center'
         },
         {
@@ -138,6 +155,7 @@ function initializeProducts() {
             rating: 4.3,
             reviews: 167,
             category: 'Antiseptic',
+            brand: 'Betadine',
             image: 'https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?w=200&h=200&fit=crop&crop=center'
         },
         {
@@ -149,6 +167,7 @@ function initializeProducts() {
             rating: 4.4,
             reviews: 203,
             category: 'Antibiotic',
+            brand: 'Generic',
             image: 'https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=200&h=200&fit=crop&crop=center'
         },
         {
@@ -160,6 +179,7 @@ function initializeProducts() {
             rating: 4.5,
             reviews: 189,
             category: 'Digestive',
+            brand: 'Generic',
             image: 'https://images.unsplash.com/photo-1559757148-5c350d0d3c56?w=200&h=200&fit=crop&crop=center'
         },
         {
@@ -171,6 +191,7 @@ function initializeProducts() {
             rating: 4.3,
             reviews: 156,
             category: 'Diabetes',
+            brand: 'Generic',
             image: 'https://images.unsplash.com/photo-1576671081837-49000212a370?w=200&h=200&fit=crop&crop=center'
         },
         {
@@ -182,6 +203,7 @@ function initializeProducts() {
             rating: 4.6,
             reviews: 234,
             category: 'Pain Relief',
+            brand: 'Generic',
             image: 'https://images.unsplash.com/photo-1587854692152-cbe660dbde88?w=200&h=200&fit=crop&crop=center'
         },
         {
@@ -193,6 +215,7 @@ function initializeProducts() {
             rating: 4.7,
             reviews: 312,
             category: 'Vitamins',
+            brand: 'Generic',
             image: 'https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?w=200&h=200&fit=crop&crop=center'
         },
         {
@@ -204,6 +227,7 @@ function initializeProducts() {
             rating: 4.4,
             reviews: 178,
             category: 'Cardiovascular',
+            brand: 'Generic',
             image: 'https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=200&h=200&fit=crop&crop=center'
         },
         {
@@ -215,6 +239,7 @@ function initializeProducts() {
             rating: 4.5,
             reviews: 145,
             category: 'Hormone',
+            brand: 'Generic',
             image: 'https://images.unsplash.com/photo-1559757148-5c350d0d3c56?w=200&h=200&fit=crop&crop=center'
         },
         {
@@ -226,6 +251,7 @@ function initializeProducts() {
             rating: 4.3,
             reviews: 167,
             category: 'Cardiovascular',
+            brand: 'Generic',
             image: 'https://images.unsplash.com/photo-1576671081837-49000212a370?w=200&h=200&fit=crop&crop=center'
         },
         {
@@ -237,6 +263,7 @@ function initializeProducts() {
             rating: 4.6,
             reviews: 298,
             category: 'Vitamins',
+            brand: 'Generic',
             image: 'https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?w=200&h=200&fit=crop&crop=center'
         },
         {
@@ -248,6 +275,7 @@ function initializeProducts() {
             rating: 4.4,
             reviews: 201,
             category: 'Minerals',
+            brand: 'Generic',
             image: 'https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=200&h=200&fit=crop&crop=center'
         },
         {
@@ -259,6 +287,7 @@ function initializeProducts() {
             rating: 4.5,
             reviews: 134,
             category: 'Digestive',
+            brand: 'Generic',
             image: 'https://images.unsplash.com/photo-1559757148-5c350d0d3c56?w=200&h=200&fit=crop&crop=center'
         },
         {
@@ -270,6 +299,7 @@ function initializeProducts() {
             rating: 4.2,
             reviews: 189,
             category: 'Antibiotic',
+            brand: 'Generic',
             image: 'https://images.unsplash.com/photo-1587854692152-cbe660dbde88?w=200&h=200&fit=crop&crop=center'
         },
         {
@@ -281,6 +311,7 @@ function initializeProducts() {
             rating: 4.4,
             reviews: 156,
             category: 'Cardiovascular',
+            brand: 'Generic',
             image: 'https://images.unsplash.com/photo-1576671081837-49000212a370?w=200&h=200&fit=crop&crop=center'
         },
         {
@@ -292,6 +323,7 @@ function initializeProducts() {
             rating: 4.7,
             reviews: 267,
             category: 'Vitamins',
+            brand: 'Generic',
             image: 'https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?w=200&h=200&fit=crop&crop=center'
         },
         {
@@ -303,10 +335,29 @@ function initializeProducts() {
             rating: 4.3,
             reviews: 198,
             category: 'Pain Relief',
+            brand: 'Generic',
             image: 'https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=200&h=200&fit=crop&crop=center'
         }
     ];
-    filteredProducts = [...allProducts];
+    // Keep products loaded; view is controlled by getDefaultProducts
+    filteredProducts = getDefaultProducts();
+    populateBrandOptions();
+}
+
+function populateBrandOptions() {
+    const brandSelect = document.getElementById('brandFilter');
+    if (!brandSelect) return;
+    const brands = Array.from(new Set(allProducts.map(p => p.brand))).filter(Boolean).sort();
+    brands.forEach(brand => {
+        const opt = document.createElement('option');
+        opt.value = brand.toLowerCase();
+        opt.textContent = brand;
+        brandSelect.appendChild(opt);
+    });
+}
+
+function getDefaultProducts() {
+    return allProducts.slice(0, DEFAULT_VISIBLE_COUNT);
 }
 
 function performSearch() {
@@ -317,12 +368,13 @@ function performSearch() {
 function applyFilters(searchQuery = '') {
     let filtered = [...allProducts];
     
-    // Show/hide filters based on search
-    const filterContainer = document.getElementById('filterContainer');
-    if (searchQuery.trim()) {
-        filterContainer.style.display = 'flex';
-    } else {
-        filterContainer.style.display = 'none';
+    // Show/hide sidebar based on search
+    if (filtersSidebar) {
+        if (searchQuery.trim()) {
+            filtersSidebar.style.display = 'block';
+        } else if (!document.body.classList.contains('filters-forced-open')) {
+            filtersSidebar.style.display = 'none';
+        }
     }
     
     // Apply search filter
@@ -335,7 +387,7 @@ function applyFilters(searchQuery = '') {
     }
     
     // Apply price filter
-    const priceFilter = document.getElementById('priceFilter').value;
+    const priceFilter = document.getElementById('priceFilter') ? document.getElementById('priceFilter').value : '';
     if (priceFilter === 'low-high') {
         filtered.sort((a, b) => a.price - b.price);
     } else if (priceFilter === 'high-low') {
@@ -343,12 +395,38 @@ function applyFilters(searchQuery = '') {
     }
     
     // Apply rating filter
-    const ratingFilter = document.getElementById('ratingFilter').value;
+    const ratingFilter = document.getElementById('ratingFilter') ? document.getElementById('ratingFilter').value : '';
     if (ratingFilter === 'high-rating') {
         filtered = filtered.filter(product => product.rating >= 4.5);
     }
     
-    filteredProducts = filtered;
+    // Apply brand filter
+    const brandFilter = document.getElementById('brandFilter') ? document.getElementById('brandFilter').value : '';
+    if (brandFilter) {
+        filtered = filtered.filter(product => (product.brand || '').toLowerCase() === brandFilter);
+    }
+
+    // Sort by offers (highest discount first)
+    const offerSort = document.getElementById('offerSort') ? document.getElementById('offerSort').value : '';
+    if (offerSort === 'best-offers') {
+        filtered.sort((a, b) => {
+            const discA = Math.round(((a.originalPrice - a.price) / a.originalPrice) * 100);
+            const discB = Math.round(((b.originalPrice - b.price) / b.originalPrice) * 100);
+            return discB - discA;
+        });
+    }
+
+    // Determine if any filter is applied
+    const priceValue = document.getElementById('priceFilter') ? document.getElementById('priceFilter').value : '';
+    const ratingValue = document.getElementById('ratingFilter') ? document.getElementById('ratingFilter').value : '';
+    const hasFiltersOnly = !searchQuery && (priceValue || ratingValue || brandFilter || offerSort);
+
+    // If no search and no filters, show default 15
+    if (!searchQuery && !hasFiltersOnly) {
+        filteredProducts = getDefaultProducts();
+    } else {
+        filteredProducts = filtered;
+    }
     displayProducts();
     updateSearchResultsInfo();
 }
@@ -372,7 +450,7 @@ function createProductCard(product) {
     
     card.innerHTML = `
         <div class="product-image">
-            <img src="${product.image}" alt="${product.name}">
+            <img src="${product.image}" alt="${product.name}" loading="lazy" decoding="async" onerror="this.onerror=null;this.src='https://via.placeholder.com/400x400?text=Image+Unavailable';">
             <div class="product-badge">${product.category}</div>
         </div>
         <div class="product-info">
@@ -388,6 +466,9 @@ function createProductCard(product) {
                 <span class="current-price">₹${product.price}</span>
                 <span class="original-price">₹${product.originalPrice}</span>
                 <span class="discount">${discount}% OFF</span>
+            </div>
+            <div class="product-meta">
+                <span class="product-brand">Brand: ${product.brand || 'Generic'}</span>
             </div>
             <button class="btn btn-primary add-to-cart" onclick="addToCart('${product.id}', '${product.name}', ${product.price})">
                 <i class="fas fa-shopping-cart"></i> Add to Cart
@@ -420,9 +501,12 @@ function generateStars(rating) {
 }
 
 function updateSearchResultsInfo() {
-    const hasFilters = searchInput.value.trim() || 
-                      document.getElementById('priceFilter').value || 
-                      document.getElementById('ratingFilter').value;
+    const hasQuery = searchInput.value.trim();
+    const priceValue = document.getElementById('priceFilter') ? document.getElementById('priceFilter').value : '';
+    const ratingValue = document.getElementById('ratingFilter') ? document.getElementById('ratingFilter').value : '';
+    const brandValue = document.getElementById('brandFilter') ? document.getElementById('brandFilter').value : '';
+    const offerValue = document.getElementById('offerSort') ? document.getElementById('offerSort').value : '';
+    const hasFilters = hasQuery || priceValue || ratingValue || brandValue || offerValue;
     
     if (hasFilters) {
         searchResultsInfo.style.display = 'flex';
@@ -434,12 +518,27 @@ function updateSearchResultsInfo() {
 
 function clearFilters() {
     searchInput.value = '';
-    document.getElementById('priceFilter').value = '';
-    document.getElementById('ratingFilter').value = '';
-    document.getElementById('filterContainer').style.display = 'none';
-    filteredProducts = [...allProducts];
+    if (document.getElementById('priceFilter')) document.getElementById('priceFilter').value = '';
+    if (document.getElementById('ratingFilter')) document.getElementById('ratingFilter').value = '';
+    if (document.getElementById('brandFilter')) document.getElementById('brandFilter').value = '';
+    if (document.getElementById('offerSort')) document.getElementById('offerSort').value = '';
+    if (filtersSidebar) filtersSidebar.style.display = 'none';
+    filteredProducts = getDefaultProducts();
     displayProducts();
     updateSearchResultsInfo();
+}
+
+// Toggle filters sidebar visibility manually
+function toggleFiltersSidebar() {
+    if (!filtersSidebar) return;
+    const isVisible = filtersSidebar.style.display !== 'none';
+    if (isVisible) {
+        filtersSidebar.style.display = 'none';
+        document.body.classList.remove('filters-forced-open');
+    } else {
+        filtersSidebar.style.display = 'block';
+        document.body.classList.add('filters-forced-open');
+    }
 }
 
 function showSearchSuggestions(query) {

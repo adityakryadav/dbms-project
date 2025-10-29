@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Genricycle - Your Health Companion</title>
-    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="style.css">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
 </head>
 <body>
@@ -27,21 +27,10 @@
                             <input type="text" placeholder="Search medications..." class="search-input" id="searchInput">
                             <button class="search-btn" onclick="performSearch()"><i class="fas fa-search"></i></button>
                         </div>
-                        <div class="filter-container" id="filterContainer" style="display: none;">
-                            <select class="filter-select" id="priceFilter" onchange="applyFilters()">
-                                <option value="">Sort by Price</option>
-                                <option value="low-high">Price: Low to High</option>
-                                <option value="high-low">Price: High to Low</option>
-                            </select>
-                            <select class="filter-select" id="ratingFilter" onchange="applyFilters()">
-                                <option value="">Sort by Rating</option>
-                                <option value="high-rating">High Rating (4.5+)</option>
-                                <option value="all-rating">All Ratings</option>
-                            </select>
-                        </div>
+                        
                     </li>
-                    <li><a href="#" class="nav-link">Contact Us</a></li>
-                    <li><a href="#" class="nav-link">Feedback</a></li>
+                    <li><a href="contact.html" class="nav-link">Contact Us</a></li>
+                    <li><a href="feedback.html" class="nav-link">Feedback</a></li>
                     <li class="auth-section">
                         <!-- Login/Signup buttons (shown when not logged in) -->
                         <div class="auth-buttons" id="authButtons">
@@ -99,10 +88,10 @@
     <div class="category-bar">
         <div class="container">
             <nav class="category-nav">
-                <a href="#" class="category-link"><i class="fas fa-capsules"></i> Generic Medicines</a>
-                <a href="#" class="category-link"><i class="fas fa-user-md"></i> Consult Doctors</a>
-                <a href="#" class="category-link"><i class="fas fa-vials"></i> Lab tests</a>
-                <a href="#" class="category-link"><i class="fas fa-recycle"></i> Recycle</a>
+                <a href="#generic-medicines" class="category-link"><i class="fas fa-capsules"></i> Generic Medicines</a>
+                <a href="consult-doctors.html" class="category-link"><i class="fas fa-user-md"></i> Consult Doctors</a>
+                <a href="lab-tests.html" class="category-link"><i class="fas fa-vials"></i> Lab tests</a>
+                <a href="recycle.html" class="category-link"><i class="fas fa-recycle"></i> Recycle</a>
                 <a href="#" class="category-link"><i class="fas fa-handshake"></i> Partnerships</a>
                 <a href="#" class="category-link"><i class="fas fa-hands-helping"></i> Donation</a>
             </nav>
@@ -133,13 +122,48 @@
             </div>
 
             <!-- Products Section -->
-            <section class="products-section">
+            <section class="products-section" id="generic-medicines">
                 <h2 class="section-title">Featured Medications</h2>
                 <div class="search-results-info" id="searchResultsInfo" style="display: none;">
                     <span id="resultsCount">0 results found</span>
-                    <button class="clear-filters-btn" onclick="clearFilters()">Clear Filters</button>
+                    <div class="results-actions">
+                        <button class="btn" id="toggleFiltersBtn" onclick="toggleFiltersSidebar()">Filters</button>
+                        <button class="clear-filters-btn" onclick="clearFilters()">Clear Filters</button>
+                    </div>
                 </div>
-                <div class="products-grid" id="productsGrid">
+                <div class="products-layout">
+                    <aside class="filters-sidebar" id="filtersSidebar" style="display: none;">
+                        <h3 class="filters-title">Filter Results</h3>
+                        <div class="filters-group">
+                            <label for="priceFilter">Sort by Price</label>
+                            <select class="filter-select" id="priceFilter" onchange="applyFilters()">
+                                <option value="">None</option>
+                                <option value="low-high">Low to High</option>
+                                <option value="high-low">High to Low</option>
+                            </select>
+                        </div>
+                        <div class="filters-group">
+                            <label for="ratingFilter">Sort by Rating</label>
+                            <select class="filter-select" id="ratingFilter" onchange="applyFilters()">
+                                <option value="">All Ratings</option>
+                                <option value="high-rating">High Rating (4.5+)</option>
+                            </select>
+                        </div>
+                        <div class="filters-group">
+                            <label for="offerSort">Sort by Offers</label>
+                            <select class="filter-select" id="offerSort" onchange="applyFilters()">
+                                <option value="">None</option>
+                                <option value="best-offers">Best Offers First</option>
+                            </select>
+                        </div>
+                        <div class="filters-group">
+                            <label for="brandFilter">Brand</label>
+                            <select class="filter-select" id="brandFilter" onchange="applyFilters()">
+                                <option value="">All Brands</option>
+                            </select>
+                        </div>
+                    </aside>
+                    <div class="products-grid" id="productsGrid">
                     <!-- Chestal Cold & Cough Relief -->
                     <div class="product-card">
                         <div class="product-image">
@@ -288,6 +312,7 @@
                                 <i class="fas fa-shopping-cart"></i> Add to Cart
                             </button>
                         </div>
+                    </div>
                     </div>
                 </div>
             </section>
