@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Settings - Genricycle</title>
-    <link rel="stylesheet" href="styles.css">
+<link rel="stylesheet" href="assets/css/styles.css">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
         .settings-container {
@@ -149,7 +149,7 @@
             <!-- Left side - Logo and Site Name -->
             <div class="logo-section">
                 <div class="logo">
-                    <img src="Gemini_Generated_Image_l95q43l95q43l95q.png" alt="Genricycle logo" class="logo-img" />
+                    <img src="assets/images/Gemini_Generated_Image_l95q43l95q43l95q.png" alt="Genricycle logo" class="logo-img" />
                     <span class="site-name">Genricycle</span>
                 </div>
             </div>
@@ -236,7 +236,10 @@
         <!-- Account Settings Section -->
         <div id="account" class="settings-section active">
             <h2>Account Information</h2>
-            <form>
+            <div id="credentialsPrompt" style="display:none; background:#FFF8E1; border:1px solid #FFB300; color:#5D4037; padding:12px 14px; border-radius:6px; margin-bottom:15px;">
+                <i class="fas fa-exclamation-circle"></i> Complete your account details to unlock personalized features.
+            </div>
+            <form id="accountForm">
                 <div class="form-group">
                     <label for="accountEmail">Email Address</label>
                     <input type="email" id="accountEmail" class="form-control" value="johndoe@example.com">
@@ -465,7 +468,7 @@
         </div>
     </footer>
 
-    <script src="script.js"></script>
+<script src="assets/js/script.js"></script>
     <script>
         // Settings page specific JavaScript
         document.addEventListener('DOMContentLoaded', function() {
@@ -488,19 +491,64 @@
                 });
             });
             
-            // Load user settings data
-            const userData = JSON.parse(localStorage.getItem('userData')) || {
+            // Load current user details from localStorage (prefer genricycle_user)
+            const stored = localStorage.getItem('genricycle_user') || localStorage.getItem('userData');
+            const userData = stored ? JSON.parse(stored) : {
+                name: 'John Doe',
                 email: 'johndoe@example.com',
                 phone: '+91 98765 43210',
                 language: 'en',
                 currency: 'inr'
             };
-            
+
             // Populate form fields
-            document.getElementById('accountEmail').value = userData.email;
-            document.getElementById('accountPhone').value = userData.phone;
-            document.getElementById('accountLanguage').value = userData.language;
-            document.getElementById('accountCurrency').value = userData.currency;
+            document.getElementById('accountEmail').value = userData.email || '';
+            document.getElementById('accountPhone').value = userData.phone || '';
+            document.getElementById('accountLanguage').value = userData.language || 'en';
+            document.getElementById('accountCurrency').value = userData.currency || 'inr';
+
+            // Prompt to complete credentials if missing
+            const promptEl = document.getElementById('credentialsPrompt');
+            const isIncomplete = !userData.email || !userData.phone;
+            if (promptEl) promptEl.style.display = isIncomplete ? 'block' : 'none';
+
+            // Save handler: persist to localStorage and backend
+            const accountForm = document.getElementById('accountForm');
+            if (accountForm) {
+                accountForm.addEventListener('submit', async function(e) {
+                    e.preventDefault();
+                    const updated = {
+                        name: (userData.name || 'User'),
+                        email: document.getElementById('accountEmail').value.trim(),
+                        phone: document.getElementById('accountPhone').value.trim(),
+                        language: document.getElementById('accountLanguage').value,
+                        currency: document.getElementById('accountCurrency').value,
+                        role: userData.role || 'customer'
+                    };
+
+                    // Persist locally
+                    localStorage.setItem('genricycle_user', JSON.stringify(updated));
+
+                    // Try backend upsert
+                    try {
+                        await fetch('/api/user', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify(updated)
+                        });
+                    } catch (err) {
+                        console.warn('Failed to update backend user profile:', err);
+                    }
+
+                    // Update header profile name if available
+                    const nameEl = document.getElementById('profileName');
+                    if (nameEl && updated.name) nameEl.textContent = updated.name;
+
+                    // UX feedback
+                    alert('Account settings saved successfully');
+                    if (promptEl) promptEl.style.display = (!updated.email || !updated.phone) ? 'block' : 'none';
+                });
+            }
         });
     </script>
 </body>

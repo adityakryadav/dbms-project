@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Order History - Genricycle</title>
+    <link rel="stylesheet" href="assets/css/styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+    <style>
+        .orders-container{max-width:1000px;margin:40px auto;padding:0 16px}
+        .orders-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
+        .orders-list{display:flex;flex-direction:column;gap:12px}
+        .order-card{display:flex;align-items:flex-start;gap:16px;background:#fff;border:1px solid #e5e7eb;border-radius:10px;padding:16px;box-shadow:0 2px 6px rgba(0,0,0,.06)}
+        .order-icon{width:40px;height:40px;border-radius:10px;background:#eef2ff;color:#4f46e5;display:flex;align-items:center;justify-content:center;font-size:18px}
+        .order-main{flex:1}
+        .order-title{font-weight:600;color:#111827}
+        .order-sub{color:#6b7280;font-size:14px;margin-top:2px}
+        .order-items{color:#374151;font-size:14px;margin-top:8px}
+        .order-meta{display:flex;gap:12px;color:#6b7280;font-size:13px;margin-top:8px}
+        .order-status{padding:4px 10px;border-radius:999px;font-size:12px;background:#eff6ff;color:#1d4ed8}
+        .empty{background:#fff;border:1px dashed #d1d5db;border-radius:10px;padding:24px;text-align:center;color:#6b7280}
+    </style>
+    <script defer>
+        document.addEventListener('DOMContentLoaded',()=>{
+            renderOrders();
+        });
+        function renderOrders(){
+            const container = document.getElementById('ordersList');
+            const orders = JSON.parse(localStorage.getItem('genricycle_orders')||'[]');
+            if(!orders.length){
+                container.innerHTML = `<div class="empty">No orders yet. Go shop some medicines!</div>`;
+                return;
+            }
+            container.innerHTML = orders.map(o=>{
+                const date = new Date(o.date);
+                const fmtDate = date.toLocaleDateString()+ ' ' + date.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
+                const itemsDesc = (o.items||[]).map(it=>`${it.name} ×${it.quantity}`).join(', ');
+                const total = (Number(o.total)||0).toFixed(2);
+                return `
+                    <div class="order-card">
+                        <div class="order-icon"><i class="fa-solid fa-shopping-bag"></i></div>
+                        <div class="order-main">
+                            <div class="order-title">Order ${o.id}</div>
+                            <div class="order-sub">Placed on ${fmtDate}</div>
+                            <div class="order-items">${itemsDesc}</div>
+                            <div class="order-meta">
+                                <span>Total: ₹${total}</span>
+                                <span class="order-status">${o.status || 'processing'}</span>
+                                <span>Payment: ${o.paymentMethod?.toUpperCase() || 'N/A'}</span>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+    </script>
+</head>
+<body>
+    <header class="header">
+        <div class="container header-container">
+            <div class="logo"><a href="/">Genricycle</a></div>
+            <nav class="nav">
+                <a href="index.html">Home</a>
+                <a href="transactions.html">Transactions</a>
+                <a href="orders.html" class="active">Orders</a>
+            </nav>
+        </div>
+    </header>
+    <main class="orders-container">
+        <div class="orders-header">
+            <h2>Order History</h2>
+        </div>
+        <div id="ordersList" class="orders-list"></div>
+    </main>
+</body>
+</html>

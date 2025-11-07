@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Genricycle - Your Health Companion</title>
-    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="assets/css/styles.css">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
 </head>
 <body>
@@ -14,7 +14,7 @@
             <!-- Left side - Logo and Site Name -->
             <div class="logo-section">
                 <div class="logo">
-                    <img src="Gemini_Generated_Image_l95q43l95q43l95q.png" alt="Genricycle logo" class="logo-img" />
+                    <img src="assets/images/Gemini_Generated_Image_l95q43l95q43l95q.png" alt="Genricycle logo" class="logo-img" />
                     <span class="site-name">Genricycle</span>
                 </div>
             </div>
@@ -159,6 +159,12 @@
                 <div class="products-layout">
                     <aside class="filters-sidebar" id="filtersSidebar" style="display: none;">
                         <h3 class="filters-title">Filter Results</h3>
+                        <div class="filters-group">
+                            <label for="categoryFilter">Category</label>
+                            <select class="filter-select" id="categoryFilter" onchange="applyFilters()">
+                                <option value="">All Categories</option>
+                            </select>
+                        </div>
                         <div class="filters-group">
                             <label for="priceFilter">Sort by Price</label>
                             <select class="filter-select" id="priceFilter" onchange="applyFilters()">
@@ -492,6 +498,6 @@
         </div>
     </div>
 
-    <script src="script.js"></script>
+    <script src="assets/js/script.js"></script>
 </body>
 </html>

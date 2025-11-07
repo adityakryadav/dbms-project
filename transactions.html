@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Transaction History - Genricycle</title>
-    <link rel="stylesheet" href="styles.css">
+<link rel="stylesheet" href="assets/css/styles.css">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
         .transactions-container { max-width: 1000px; margin: 30px auto; padding: 20px; background:#fff; border-radius:10px; box-shadow:0 2px 10px rgba(0,0,0,0.1); }
@@ -68,15 +68,18 @@
                         details: `${b.lab || ''} • ${b.date || ''} ${b.time || ''}`,
                     });
                 });
-                // Reward redemptions
-                const redemptions = JSON.parse(localStorage.getItem('genricycle_transactions')||'[]');
-                redemptions.filter(t=>t.type==='redemption').forEach(t=>{
+                // All saved transactions (purchases, redemptions, etc.)
+                const savedTx = JSON.parse(localStorage.getItem('genricycle_transactions')||'[]');
+                savedTx.forEach(t=>{
                     arr.push({
                         id: t.id,
-                        type: 'redemption',
-                        title: t.title || 'Reward Redeemed',
+                        type: t.type || 'other',
+                        title: t.title || 'Transaction',
                         date: t.date || new Date().toISOString(),
-                        points: t.points || 0,
+                        points: t.points,
+                        amount: t.amount,
+                        status: t.status,
+                        details: t.details,
                     });
                 });
                 // Sort desc by date
@@ -93,7 +96,8 @@
                 transactions.forEach(tx=>{
                     const row = document.createElement('div');
                     row.className = 'tx-item';
-                    const icon = tx.type==='return' ? 'fa-undo' : (tx.type==='lab' ? 'fa-vials' : 'fa-gift');
+                    const iconMap = { return: 'fa-undo', lab: 'fa-vials', redemption: 'fa-gift', purchase: 'fa-shopping-bag' };
+                    const icon = iconMap[tx.type] || 'fa-file-invoice';
                     const rightVal = tx.points ? `${tx.points>0?'+':''}${tx.points} pts` : (tx.amount ? `₹${tx.amount}` : '');
                     const pointsCls = tx.points ? (tx.points>0 ? 'tx-points-earned' : 'tx-points-redeemed') : '';
                     const statusBadge = tx.status ? `<span class="badge ${tx.status}">${tx.status}</span>` : '';
@@ -147,7 +151,7 @@
         <div class="container">
             <div class="logo-section">
                 <div class="logo">
-                    <img src="Gemini_Generated_Image_l95q43l95q43l95q.png" alt="Genricycle logo" class="logo-img" />
+                    <img src="assets/images/Gemini_Generated_Image_l95q43l95q43l95q.png" alt="Genricycle logo" class="logo-img" />
                     <span class="site-name">Genricycle</span>
                 </div>
             </div>
@@ -201,6 +205,7 @@
                 <button class="filter-btn" data-type="return">Returns</button>
                 <button class="filter-btn" data-type="lab">Lab Tests</button>
                 <button class="filter-btn" data-type="redemption">Redemptions</button>
+                <button class="filter-btn" data-type="purchase">Purchases</button>
             </div>
         </div>
         <div id="transactionsList" class="transactions-list"></div>
