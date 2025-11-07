@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Profile - Genricycle</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        .profile-container {
+            max-width: 1000px;
+            margin: 30px auto;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .profile-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #eee;
+        }
+        .profile-avatar {
+            width: 100px;
+            height: 100px;
+            background-color: #f0f0f0;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 20px;
+            font-size: 40px;
+            color: #666;
+        }
+        .profile-info h1 {
+            margin: 0 0 5px 0;
+            color: #333;
+        }
+        .profile-info p {
+            margin: 0;
+            color: #666;
+        }
+        .profile-stats {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 30px;
+        }
+        .stat-box {
+            flex: 1;
+            background-color: #f9f9f9;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+            margin: 0 10px;
+        }
+        .stat-box:first-child {
+            margin-left: 0;
+        }
+        .stat-box:last-child {
+            margin-right: 0;
+        }
+        .stat-value {
+            font-size: 24px;
+            font-weight: bold;
+            color: #4CAF50;
+            margin-bottom: 5px;
+        }
+        .stat-label {
+            color: #666;
+            font-size: 14px;
+        }
+        .profile-section {
+            margin-bottom: 30px;
+        }
+        .profile-section h2 {
+            margin-top: 0;
+            color: #333;
+            border-bottom: 2px solid #4CAF50;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+            color: #555;
+        }
+        .form-control {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+        .btn-update {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        .btn-update:hover {
+            background-color: #45a049;
+        }
+        .address-card {
+            background-color: #f9f9f9;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            border-left: 4px solid #4CAF50;
+        }
+        .address-type {
+            font-weight: bold;
+            margin-bottom: 5px;
+            color: #333;
+        }
+        .address-actions {
+            margin-top: 10px;
+        }
+        .address-actions button {
+            background: none;
+            border: none;
+            color: #4CAF50;
+            cursor: pointer;
+            margin-right: 15px;
+            font-size: 14px;
+        }
+        .address-actions button:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header Section -->
+    <header class="header">
+        <div class="container">
+            <!-- Left side - Logo and Site Name -->
+            <div class="logo-section">
+                <div class="logo">
+                    <img src="Gemini_Generated_Image_l95q43l95q43l95q.png" alt="Genricycle logo" class="logo-img" />
+                    <span class="site-name">Genricycle</span>
+                </div>
+            </div>
+
+            <!-- Right side - Navigation -->
+            <nav class="navigation">
+                <ul class="nav-menu">
+                    <li class="search-section">
+                        <div class="search-container">
+                            <input type="text" placeholder="Search medications..." class="search-input" id="searchInput">
+                            <button class="search-btn" onclick="performSearch()"><i class="fas fa-search"></i></button>
+                        </div>
+                    </li>
+                    <li><a href="contact.html" class="nav-link">Contact Us</a></li>
+                    <li><a href="feedback.html" class="nav-link">Feedback</a></li>
+                    <li>
+                        <a href="#" class="nav-link cart-link" onclick="openCartModal(); return false;" style="font-size: 1.2rem; position: relative;">
+                            <i class="fas fa-shopping-cart"></i>
+                            <span class="cart-count" style="display:none; position:absolute; top:-6px; right:-10px; background:#FF5722; color:#fff; border-radius:50%; font-size:0.7rem; padding:2px 6px; min-width:18px; text-align:center;">0</span>
+                        </a>
+                    </li>
+                    <li class="auth-section">
+                        <!-- Profile dropdown (shown when logged in) -->
+                        <div class="profile-dropdown" id="profileDropdown">
+                            <div class="profile-trigger" onclick="toggleProfileDropdown()">
+                                <div class="profile-avatar">
+                                    <i class="fas fa-user"></i>
+                                </div>
+                                <span class="profile-name" id="profileName">John Doe</span>
+                                <i class="fas fa-chevron-down dropdown-arrow"></i>
+                            </div>
+                            <div class="dropdown-menu" id="dropdownMenu">
+                                <a href="profile.html" class="dropdown-item active">
+                                    <i class="fas fa-user"></i>
+                                    My Profile
+                                </a>
+                                <a href="settings.html" class="dropdown-item">
+                                    <i class="fas fa-cog"></i>
+                                    Settings
+                                </a>
+                                <a href="transactions.html" class="dropdown-item">
+                                    <i class="fas fa-history"></i>
+                                    Transaction History
+                                </a>
+                                <a href="orders.html" class="dropdown-item">
+                                    <i class="fas fa-shopping-bag"></i>
+                                    Order History
+                                </a>
+                                <a href="rewards.html" class="dropdown-item">
+                                    <i class="fas fa-gift"></i>
+                                    Rewards
+                                </a>
+                                <a href="#" class="dropdown-item">
+                                    <i class="fas fa-robot"></i>
+                                    Chatbot
+                                </a>
+                                <hr class="dropdown-divider">
+                                <a href="#" class="dropdown-item" onclick="logout()">
+                                    <i class="fas fa-sign-out-alt"></i>
+                                    Logout
+                                </a>
+                            </div>
+                        </div>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <div class="profile-container">
+        <div class="profile-header">
+            <div class="profile-avatar">
+                <i class="fas fa-user"></i>
+            </div>
+            <div class="profile-info">
+                <h1>John Doe</h1>
+                <p><i class="fas fa-envelope"></i> johndoe@example.com</p>
+                <p><i class="fas fa-phone"></i> +91 98765 43210</p>
+            </div>
+        </div>
+
+        <div class="profile-stats">
+            <div class="stat-box">
+                <div class="stat-value">12</div>
+                <div class="stat-label">Orders</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-value">₹4,500</div>
+                <div class="stat-label">Total Spent</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-value">250</div>
+                <div class="stat-label">Reward Points</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-value">Silver</div>
+                <div class="stat-label">Membership</div>
+            </div>
+        </div>
+
+        <div class="profile-section">
+            <h2>Personal Information</h2>
+            <form>
+                <div class="form-group">
+                    <label for="fullName">Full Name</label>
+                    <input type="text" id="fullName" class="form-control" value="John Doe">
+                </div>
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <input type="email" id="email" class="form-control" value="johndoe@example.com">
+                </div>
+                <div class="form-group">
+                    <label for="phone">Phone Number</label>
+                    <input type="tel" id="phone" class="form-control" value="+91 98765 43210">
+                </div>
+                <div class="form-group">
+                    <label for="dob">Date of Birth</label>
+                    <input type="date" id="dob" class="form-control" value="1990-01-15">
+                </div>
+                <div class="form-group">
+                    <label for="gender">Gender</label>
+                    <select id="gender" class="form-control">
+                        <option value="male" selected>Male</option>
+                        <option value="female">Female</option>
+                        <option value="other">Other</option>
+                        <option value="prefer-not-to-say">Prefer not to say</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn-update">Update Information</button>
+            </form>
+        </div>
+
+        <div class="profile-section">
+            <h2>Saved Addresses</h2>
+            <div class="address-card">
+                <div class="address-type">Home</div>
+                <p>123 Main Street, Apartment 4B<br>Mumbai, Maharashtra 400001<br>India</p>
+                <div class="address-actions">
+                    <button><i class="fas fa-edit"></i> Edit</button>
+                    <button><i class="fas fa-trash"></i> Delete</button>
+                    <button><i class="fas fa-check-circle"></i> Set as Default</button>
+                </div>
+            </div>
+            <div class="address-card">
+                <div class="address-type">Work</div>
+                <p>456 Office Park, Building C<br>Mumbai, Maharashtra 400051<br>India</p>
+                <div class="address-actions">
+                    <button><i class="fas fa-edit"></i> Edit</button>
+                    <button><i class="fas fa-trash"></i> Delete</button>
+                    <button><i class="fas fa-check-circle"></i> Set as Default</button>
+                </div>
+            </div>
+            <button class="btn-update"><i class="fas fa-plus"></i> Add New Address</button>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>About Genricycle</h3>
+                    <p>Providing affordable generic medications and healthcare services to everyone.</p>
+                </div>
+                <div class="footer-section">
+                    <h3>Quick Links</h3>
+                    <ul>
+                        <li><a href="index.html">Home</a></li>
+                        <li><a href="about.html">About Us</a></li>
+                        <li><a href="contact.html">Contact</a></li>
+                        <li><a href="feedback.html">Feedback</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h3>Contact Us</h3>
+                    <p><i class="fas fa-map-marker-alt"></i> 123 Healthcare Ave, Mumbai</p>
+                    <p><i class="fas fa-phone"></i> +91 1234567890</p>
+                    <p><i class="fas fa-envelope"></i> info@genricycle.com</p>
+                </div>
+                <div class="footer-section">
+                    <h3>Follow Us</h3>
+                    <div class="social-icons">
+                        <a href="#"><i class="fab fa-facebook"></i></a>
+                        <a href="#"><i class="fab fa-twitter"></i></a>
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                        <a href="#"><i class="fab fa-linkedin"></i></a>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2023 Genricycle. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+    <script>
+        // Profile specific JavaScript
+        document.addEventListener('DOMContentLoaded', function() {
+            // Load user profile data
+            const userData = JSON.parse(localStorage.getItem('userData')) || {
+                name: 'John Doe',
+                email: 'johndoe@example.com',
+                phone: '+91 98765 43210',
+                dob: '1990-01-15',
+                gender: 'male'
+            };
+            
+            // Populate form fields
+            document.getElementById('fullName').value = userData.name;
+            document.getElementById('email').value = userData.email;
+            document.getElementById('phone').value = userData.phone;
+            document.getElementById('dob').value = userData.dob;
+            document.getElementById('gender').value = userData.gender;
+            
+            // Update profile header
+            document.querySelector('.profile-info h1').textContent = userData.name;
+            document.querySelector('.profile-info p:nth-child(2)').innerHTML = `<i class="fas fa-envelope"></i> ${userData.email}`;
+            document.querySelector('.profile-info p:nth-child(3)').innerHTML = `<i class="fas fa-phone"></i> ${userData.phone}`;
+        });
+    </script>
+</body>
+</html>

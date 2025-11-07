@@ -1,0 +1,921 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lab Tests - Genricycle</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        /* Auth and Portal */
+        .auth-bar { display:flex; justify-content:flex-end; align-items:center; gap:12px; padding:10px 20px; background:#2E7D32; color:#fff; }
+        .auth-btn { background:#fff; color:#2E7D32; border:none; padding:8px 12px; border-radius:6px; cursor:pointer; font-weight:600; }
+        .auth-modal { display:none; position:fixed; inset:0; background:rgba(0,0,0,.5); z-index:2000; }
+        .auth-modal .panel { background:#fff; margin:5% auto; max-width:700px; border-radius:10px; padding:20px; }
+        .auth-tabs { display:flex; gap:10px; margin-bottom:12px; }
+        .auth-tab { flex:1; text-align:center; padding:10px; border:1px solid #ddd; border-radius:6px; cursor:pointer; font-weight:600; }
+        .auth-tab.active { background:#e8f5e9; color:#2E7D32; border-color:#2E7D32; }
+        .auth-form { display:none; grid-template-columns: repeat(2, minmax(200px, 1fr)); gap:12px; }
+        .auth-form.active { display:grid; }
+        .auth-form .form-group { display:flex; flex-direction:column; }
+        .auth-form label { font-weight:600; margin-bottom:6px; }
+        .auth-form input, .auth-form select { padding:10px; border:1px solid #ddd; border-radius:6px; }
+        .auth-actions { grid-column:1 / -1; display:flex; justify-content:flex-end; gap:10px; margin-top:10px; }
+
+        .portal-container { display:none; }
+        .portal { max-width:1000px; margin:20px auto; padding:0 20px; }
+        .portal-header { display:flex; justify-content:space-between; align-items:center; }
+        .portal-grid { display:grid; grid-template-columns: 220px 1fr; gap:16px; margin-top:16px; }
+        .portal-sidebar { background:#fff; border:1px solid rgba(46,125,50,0.12); border-radius:12px; padding:12px; }
+        .portal-sidebar a { display:block; padding:10px; border-radius:6px; text-decoration:none; color:#333; margin-bottom:6px; }
+        .portal-sidebar a:hover, .portal-sidebar a.active { background:#e8f5e9; color:#2E7D32; }
+        .portal-content { background:#fff; border:1px solid rgba(46,125,50,0.12); border-radius:12px; padding:16px; }
+        .notification { background:#f9f9f9; border-left:4px solid #2E7D32; padding:10px; border-radius:6px; margin-bottom:8px; }
+        .hidden { display:none !important; }
+        .page-wrapper { max-width: 1000px; margin: 0 auto; padding: 2rem 20px; }
+        .simple-card { background: #fff; border: 1px solid rgba(46,125,50,0.12); border-radius: 12px; padding: 1.5rem; box-shadow: 0 4px 12px rgba(0,0,0,0.06); }
+        .back-link { display: inline-flex; align-items: center; gap: .5rem; text-decoration: none; color: #2E7D32; font-weight: 600; margin-bottom: 1rem; }
+        
+        /* Test Categories */
+        .lab-tests-grid {
+            padding: 2rem;
+            background-color: white;
+            text-align: center;
+        }
+        
+        .tests-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-top: 2rem;
+        }
+        
+        .test-card {
+            background-color: #f5f5f5;
+            padding: 1.5rem;
+            border-radius: 8px;
+            color: #333;
+            transition: transform 0.3s, box-shadow 0.3s;
+            display: flex;
+            flex-direction: column;
+            cursor: pointer;
+            position: relative;
+        }
+        
+        .test-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        }
+        
+        .test-card span {
+            font-weight: bold;
+            font-size: 1.1rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .test-card small {
+            color: #666;
+            margin-bottom: 1rem;
+        }
+        
+        .view-details-btn {
+            background-color: #4a90e2;
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-top: auto;
+            transition: background-color 0.3s;
+        }
+        
+        .view-details-btn:hover {
+            background-color: #3a7bc8;
+        }
+        
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.5);
+        }
+        
+        .modal-content {
+            background-color: white;
+            margin: 5% auto;
+            padding: 2rem;
+            border-radius: 8px;
+            width: 80%;
+            max-width: 800px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            position: relative;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+        
+        .close-modal {
+            position: absolute;
+            right: 1.5rem;
+            top: 1rem;
+            font-size: 1.5rem;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        
+        .test-details {
+            margin: 1.5rem 0;
+        }
+        
+        .detail-row {
+            display: flex;
+            margin-bottom: 1rem;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 0.5rem;
+        }
+        
+        .detail-label {
+            font-weight: bold;
+            width: 150px;
+            color: #555;
+        }
+        
+        .detail-value {
+            flex: 1;
+        }
+        
+        .booking-section {
+            background-color: #f9f9f9;
+            padding: 1.5rem;
+            border-radius: 8px;
+            margin-top: 1.5rem;
+        }
+        
+        .booking-form {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+        
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .form-group label {
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+        }
+        
+        .form-group input,
+        .form-group select {
+            padding: 0.75rem;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        
+        .book-test-btn {
+            grid-column: 1 / -1;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            padding: 1rem;
+            border-radius: 4px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 1rem;
+            transition: background-color 0.3s;
+        }
+        
+        .book-test-btn:hover {
+            background-color: #45a049;
+        }
+    </style>
+    </head>
+<body>
+    <div class="auth-bar">
+        <div>Lab Portal</div>
+        <button id="openAuthBtn" class="auth-btn">Login / Sign Up</button>
+    </div>
+
+    <!-- Hero Bar -->
+    <section class="lab-hero">
+        <div class="container">
+            <h1>Book lab tests online from trusted and certified labs</h1>
+            <p>Fast sample collection, accurate reports, and transparent pricing.</p>
+        </div>
+    </section>
+
+    <main class="lab-main">
+        <div class="container">
+            <!-- Location + Search -->
+            <section class="lab-search">
+                <div class="lab-search-bar">
+                    <div class="location-input">
+                        <i class="fas fa-location-dot"></i>
+                        <input type="text" id="labLocation" placeholder="Enter your city or pincode">
+                        <button class="btn btn-primary" id="detectLocationBtn">Detect</button>
+                    </div>
+                    <div class="test-input">
+                        <i class="fas fa-flask"></i>
+                        <input type="text" id="labQuery" placeholder="Search tests or labs (e.g. CBC, Thyroid, SRL)">
+                        <button class="btn btn-primary" id="searchLabsBtn">Search</button>
+                    </div>
+                </div>
+                <div class="lab-search-note">Popular: CBC, Thyroid, Diabetes (HbA1c), Liver (LFT), Kidney (KFT), Lipid Profile</div>
+            </section>
+
+            <!-- Features -->
+            <section class="lab-features">
+                <div class="feature-card"><i class="fas fa-microscope"></i><h3>Certified Labs</h3><p>CAP/NABL accredited partners for reliable results.</p></div>
+                <div class="feature-card"><i class="fas fa-tachometer-alt"></i><h3>Fast Turnaround</h3><p>Same-day or next-day reports for most tests.</p></div>
+                <div class="feature-card"><i class="fas fa-user-nurse"></i><h3>Home Sample</h3><p>Phlebotomist visits at your convenience.</p></div>
+                <div class="feature-card"><i class="fas fa-shield-heart"></i><h3>Safe & Hygienic</h3><p>Medical-grade protocols for safe collection.</p></div>
+            </section>
+
+            <!-- Lab Gallery -->
+            <section class="lab-gallery">
+                <div class="gallery-grid">
+                    <figure class="gallery-item">
+                        <img src="369019249.jpg" alt="Phlebotomist collecting blood sample" loading="lazy">
+                    </figure>
+                    <figure class="gallery-item">
+                        <img src="Lab-Testing.jpg" alt="Patient getting blood drawn in a certified lab" loading="lazy">
+                    </figure>
+                    <figure class="gallery-item">
+                        <img src="OIP.webp" alt="Lab technician preparing sample" loading="lazy">
+                    </figure>
+                </div>
+            </section>
+
+            <!-- Test Categories -->
+            <section class="lab-tests-grid">
+                <h2>Popular Test Categories</h2>
+                <p style="margin-bottom: 1rem;">View detailed test information for free. Book tests with our partner labs when you're ready.</p>
+                <div class="tests-grid">
+                    <div class="test-card" onclick="showTestDetails('Fever Panel', 'Comprehensive panel to diagnose common fever causes including Malaria, Dengue, and Typhoid. Includes blood smear, NS1 antigen, and Widal test.', '₹1,299', '24 hours')">
+                        <span>Fever Panel</span>
+                        <small>Malaria, Dengue, Typhoid</small>
+                        <button class="view-details-btn">View Details</button>
+                    </div>
+                    <div class="test-card" onclick="showTestDetails('Diabetes', 'Complete diabetes screening with Fasting Blood Sugar, Post Prandial, HbA1c, and Insulin levels to assess glucose metabolism.', '₹899', '12 hours')">
+                        <span>Diabetes</span>
+                        <small>Fasting, PP, HbA1c</small>
+                        <button class="view-details-btn">View Details</button>
+                    </div>
+                    <div class="test-card" onclick="showTestDetails('Thyroid', 'Complete thyroid function assessment with T3, T4, and TSH levels to diagnose hypo/hyperthyroidism and monitor treatment.', '₹799', '12 hours')">
+                        <span>Thyroid</span>
+                        <small>T3, T4, TSH</small>
+                        <button class="view-details-btn">View Details</button>
+                    </div>
+                    <div class="test-card" onclick="showTestDetails('Kidney Function Test', 'Comprehensive kidney health assessment including Urea, Creatinine, Electrolytes, and GFR calculation.', '₹999', '12 hours')">
+                        <span>Kidney (KFT)</span>
+                        <small>Urea, Creatinine, Electrolytes</small>
+                        <button class="view-details-btn">View Details</button>
+                    </div>
+                    <div class="test-card" onclick="showTestDetails('Liver Function Test', 'Complete liver health assessment with AST, ALT, Bilirubin, Albumin, and other markers to detect liver disorders.', '₹899', '12 hours')">
+                        <span>Liver (LFT)</span>
+                        <small>AST, ALT, Bilirubin</small>
+                        <button class="view-details-btn">View Details</button>
+                    </div>
+                    <div class="test-card" onclick="showTestDetails('Complete Blood Count', 'Essential blood test that measures RBC, WBC, platelets, hemoglobin, and other components to assess overall health.', '₹499', '6 hours')">
+                        <span>Complete Blood Count</span>
+                        <small>CBC</small>
+                        <button class="view-details-btn">View Details</button>
+                    </div>
+                    <div class="test-card" onclick="showTestDetails('Lipid Profile', 'Comprehensive cholesterol assessment including HDL, LDL, VLDL, and Triglycerides to evaluate cardiovascular risk.', '₹699', '12 hours')">
+                        <span>Lipid Profile</span>
+                        <small>HDL, LDL, Triglycerides</small>
+                        <button class="view-details-btn">View Details</button>
+                    </div>
+                    <div class="test-card" onclick="showTestDetails('Vitamin D & B12', 'Essential vitamin level assessment to diagnose deficiencies that can cause fatigue, weakness, and neurological issues.', '₹1,299', '24 hours')">
+                        <span>Vitamin D & B12</span>
+                        <small>Deficiency screening</small>
+                        <button class="view-details-btn">View Details</button>
+                    </div>
+                    <div class="test-card" onclick="showTestDetails('COVID-19 RT-PCR', 'Gold standard test for COVID-19 detection using nasopharyngeal swab with high accuracy and sensitivity.', '₹799', '24 hours')">
+                        <span>COVID-19 RT-PCR</span>
+                        <small>Nasopharyngeal swab</small>
+                        <button class="view-details-btn">View Details</button>
+                    </div>
+                    <div class="test-card" onclick="showTestDetails('Urine Analysis', 'Complete urine examination including physical, chemical, and microscopic analysis to detect infections and kidney issues.', '₹399', '6 hours')">
+                        <span>Urine Analysis</span>
+                        <small>Routine & Microscopy</small>
+                        <button class="view-details-btn">View Details</button>
+                    </div>
+                    <div class="test-card" onclick="showTestDetails('Allergy Panel', 'Comprehensive screening for common food and inhalant allergies to identify triggers and guide treatment.', '₹2,499', '48 hours')">
+                        <span>Allergy Panel</span>
+                        <small>Food & Inhalants</small>
+                        <button class="view-details-btn">View Details</button>
+                    </div>
+                    <div class="test-card" onclick="showTestDetails('Women\'s Health', 'Complete hormonal profile for women including estrogen, progesterone, FSH, LH to diagnose PCOS and other conditions.', '₹1,899', '24 hours')">
+                        <span>Women's Health</span>
+                        <small>PCOS, Hormones</small>
+                        <button class="view-details-btn">View Details</button>
+                    </div>
+                </div>
+            </section>
+            
+            <!-- Test Details Modal -->
+            <div id="testDetailsModal" class="modal">
+                <div class="modal-content">
+                    <span class="close-modal">&times;</span>
+                    <h2 id="modalTestName">Test Name</h2>
+                    <div class="test-details">
+                        <div class="detail-row">
+                            <div class="detail-label">Description:</div>
+                            <div id="modalTestDescription" class="detail-value">Test description</div>
+                        </div>
+                        <div class="detail-row">
+                            <div class="detail-label">Price:</div>
+                            <div id="modalTestPrice" class="detail-value">₹XXX</div>
+                        </div>
+                        <div class="detail-row">
+                            <div class="detail-label">Report Time:</div>
+                            <div id="modalTestTime" class="detail-value">XX hours</div>
+                        </div>
+                        <div class="detail-row">
+                            <div class="detail-label">Sample Type:</div>
+                            <div class="detail-value">Blood (venous)</div>
+                        </div>
+                        <div class="detail-row">
+                            <div class="detail-label">Fasting Required:</div>
+                            <div class="detail-value">Yes (8-10 hours)</div>
+                        </div>
+                        <div class="detail-row">
+                            <div class="detail-label">Available Labs:</div>
+                            <div class="detail-value">SRL Diagnostics, Thyrocare, Dr. Lal PathLabs</div>
+                        </div>
+                    </div>
+                    <div class="booking-section">
+                        <h3>Book This Test</h3>
+                        <div class="booking-form">
+                            <div class="form-group">
+                                <label>Select Date:</label>
+                                <input type="date" id="testDate" min="" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Select Time Slot:</label>
+                                <select id="testTimeSlot" required>
+                                    <option value="">Select a time slot</option>
+                                    <option value="06:00 - 08:00">06:00 AM - 08:00 AM</option>
+                                    <option value="08:00 - 10:00">08:00 AM - 10:00 AM</option>
+                                    <option value="10:00 - 12:00">10:00 AM - 12:00 PM</option>
+                                    <option value="16:00 - 18:00">04:00 PM - 06:00 PM</option>
+                                    <option value="18:00 - 20:00">06:00 PM - 08:00 PM</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Select Lab:</label>
+                                <select id="testLab" required>
+                                    <option value="">Select a lab</option>
+                                    <option value="SRL Diagnostics">SRL Diagnostics</option>
+                                    <option value="Thyrocare">Thyrocare</option>
+                                    <option value="Dr. Lal PathLabs">Dr. Lal PathLabs</option>
+                                </select>
+                            </div>
+                            <button id="bookTestBtn" class="book-test-btn">Book Now (Pay ₹<span id="bookingPrice">XXX</span>)</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- FAQ -->
+            <section class="lab-faq">
+                <h2>Frequently Asked Questions</h2>
+                <div class="accordion">
+                    <div class="accordion-item">
+                        <button class="accordion-header">How do I book a lab test online?</button>
+                        <div class="accordion-panel"><p>Select your location, search the test, pick a slot, and confirm booking. A phlebotomist will visit you for sample collection.</p></div>
+                    </div>
+                    <div class="accordion-item">
+                        <button class="accordion-header">When will I get my reports?</button>
+                        <div class="accordion-panel"><p>Most tests are reported same-day or within 24 hours. Some specialized tests may take longer.</p></div>
+                    </div>
+                    <div class="accordion-item">
+                        <button class="accordion-header">Are your partner labs certified?</button>
+                        <div class="accordion-panel"><p>Yes, we work with CAP/NABL accredited labs with strict quality control processes.</p></div>
+                    </div>
+                    <div class="accordion-item">
+                        <button class="accordion-header">Is home sample collection safe?</button>
+                        <div class="accordion-panel"><p>Yes. Our partners follow medical-grade PPE, sterilization, and cold-chain protocols.</p></div>
+        </div>
+    </div>
+            </section>
+        </div>
+    </main>
+
+    <!-- Auth Modal -->
+    <div id="authModal" class="auth-modal">
+        <div class="panel">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+                <h2 style="margin:0;">Lab Portal Access</h2>
+                <button id="closeAuthBtn" class="auth-btn" style="background:#2E7D32; color:#fff;">Close</button>
+            </div>
+            <div class="auth-tabs">
+                <div id="tabLogin" class="auth-tab active">Login</div>
+                <div id="tabSignup" class="auth-tab">Sign Up</div>
+            </div>
+            <form id="loginForm" class="auth-form active">
+                <div class="form-group">
+                    <label>Email or Phone</label>
+                    <input type="text" id="loginId" placeholder="you@example.com or 9876543210" required>
+                </div>
+                <div class="form-group">
+                    <label>Password</label>
+                    <input type="password" id="loginPassword" placeholder="••••••••" required>
+                </div>
+                <div class="auth-actions">
+                    <button type="button" id="loginBtn" class="auth-btn" style="background:#2E7D32; color:#fff;">Login</button>
+                </div>
+            </form>
+            <form id="signupForm" class="auth-form">
+                <div class="form-group">
+                    <label>Full Name</label>
+                    <input type="text" id="suName" required>
+                </div>
+                <div class="form-group">
+                    <label>Email</label>
+                    <input type="email" id="suEmail" required>
+                </div>
+                <div class="form-group">
+                    <label>Phone</label>
+                    <input type="tel" id="suPhone" required>
+                </div>
+                <div class="form-group">
+                    <label>Lab/Hospital Name</label>
+                    <input type="text" id="suLabName" required>
+                </div>
+                <div class="form-group">
+                    <label>Address</label>
+                    <input type="text" id="suAddress" required>
+                </div>
+                <div class="form-group">
+                    <label>Password</label>
+                    <input type="password" id="suPassword" required>
+                </div>
+                <div class="form-group">
+                    <label>Confirm Password</label>
+                    <input type="password" id="suPassword2" required>
+                </div>
+                <div class="auth-actions">
+                    <button type="button" id="signupBtn" class="auth-btn" style="background:#2E7D32; color:#fff;">Create Account</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Portal View -->
+    <div id="portalContainer" class="portal-container">
+        <div class="portal">
+            <div class="portal-header">
+                <div>
+                    <h2 id="portalLabName" style="margin:0;">Your Lab</h2>
+                    <small id="portalLabAddress"></small>
+                </div>
+                <div>
+                    <span id="portalUserName"></span>
+                    <button id="logoutBtn" class="auth-btn">Logout</button>
+                </div>
+            </div>
+            <div class="portal-grid">
+                <div class="portal-sidebar">
+                    <a href="#" data-section="notifications" class="active">Notifications</a>
+                    <a href="recycle.html">Recycle</a>
+                    <a href="#" data-section="reportsScheduled">Reports Scheduled & Rewards</a>
+                    <a href="#" data-section="settings">Settings</a>
+                    <a href="#" data-section="reportHistory">Report History</a>
+                    <a href="#" data-section="recycleHistory">Recycle History</a>
+                </div>
+                <div class="portal-content">
+                    <div id="section-notifications">
+                        <div class="notification">New booking received. Please confirm pickup schedule.</div>
+                        <div class="notification">Your compliance report is due next week.</div>
+                    </div>
+                    <div id="section-reportsScheduled" class="hidden">
+                        <h3>Scheduled Reports</h3>
+                        <div id="scheduledReports"></div>
+                        <h3 style="margin-top:12px;">Rewards</h3>
+                        <div id="rewardsSummary">No rewards yet</div>
+                    </div>
+                    <div id="section-settings" class="hidden">
+                        <h3>Profile</h3>
+                        <div id="settingsProfile"></div>
+                    </div>
+                    <div id="section-reportHistory" class="hidden">
+                        <h3>Report History</h3>
+                        <table style="width:100%; border-collapse:collapse;">
+                            <thead><tr><th>ID</th><th>Test</th><th>Date</th><th>Time</th><th>Lab</th><th>Amount</th></tr></thead>
+                            <tbody id="reportHistoryBody"><tr><td colspan="6" style="text-align:center;">No history</td></tr></tbody>
+                        </table>
+                    </div>
+                    <div id="section-recycleHistory" class="hidden">
+                        <h3>Recycle History</h3>
+                        <ul id="recycleHistoryList"><li>No recycle entries</li></ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+    // Simple accordion
+    document.addEventListener('DOMContentLoaded', function() {
+        document.querySelectorAll('.accordion-header').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const panel = btn.nextElementSibling;
+                const open = panel.style.maxHeight && panel.style.maxHeight !== '0px';
+                document.querySelectorAll('.accordion-panel').forEach(p => { p.style.maxHeight = '0px'; });
+                if (!open) {
+                    panel.style.maxHeight = panel.scrollHeight + 'px';
+                }
+            });
+        });
+
+        // Stub for Detect Location
+        const detectBtn = document.getElementById('detectLocationBtn');
+        if (detectBtn) {
+            detectBtn.addEventListener('click', () => {
+                alert('Location detection is not yet implemented. Please enter your city or pincode.');
+            });
+        }
+
+        const searchBtn = document.getElementById('searchLabsBtn');
+        if (searchBtn) {
+            searchBtn.addEventListener('click', () => {
+                const loc = document.getElementById('labLocation').value.trim();
+                const q = document.getElementById('labQuery').value.trim();
+                if (!loc && !q) { alert('Enter a location or test name'); return; }
+                alert(`Searching labs near "${loc || 'your area'}" for "${q || 'all tests'}"`); 
+            });
+        }
+        
+        // Test Details Modal Functionality
+        const modal = document.getElementById('testDetailsModal');
+        const closeModal = document.querySelector('.close-modal');
+        
+        // Close modal when clicking the X
+        closeModal.addEventListener('click', () => {
+            modal.style.display = 'none';
+        });
+        
+        // Close modal when clicking outside
+        window.addEventListener('click', (event) => {
+            if (event.target === modal) {
+                modal.style.display = 'none';
+            }
+        });
+        
+        // Show test details in modal
+        // Expose globally because inline onclick on cards calls this
+        window.showTestDetails = function(testName, description, price, reportTime) {
+            document.getElementById('modalTestName').textContent = testName;
+            document.getElementById('modalTestDescription').textContent = description;
+            document.getElementById('modalTestPrice').textContent = price;
+            document.getElementById('modalTestTime').textContent = reportTime;
+            document.getElementById('bookingPrice').textContent = price.replace('₹', '');
+            
+            // Set minimum date to today
+            const today = new Date();
+            const yyyy = today.getFullYear();
+            const mm = String(today.getMonth() + 1).padStart(2, '0');
+            const dd = String(today.getDate()).padStart(2, '0');
+            document.getElementById('testDate').min = `${yyyy}-${mm}-${dd}`;
+            
+            modal.style.display = 'block';
+        }
+        
+        // Book Test Button
+         document.getElementById('bookTestBtn').addEventListener('click', function() {
+             const testDate = document.getElementById('testDate').value;
+             const testTimeSlot = document.getElementById('testTimeSlot').value;
+             const testLab = document.getElementById('testLab').value;
+             
+             // Validate form
+             if (!testDate || !testTimeSlot || !testLab) {
+                 alert('Please fill in all booking details');
+                 return;
+             }
+             
+             // Show payment modal
+             const paymentModal = document.createElement('div');
+             paymentModal.id = 'paymentModal';
+             paymentModal.className = 'modal';
+             
+             const testName = document.getElementById('modalTestName').textContent;
+             const testPrice = document.getElementById('modalTestPrice').textContent;
+             
+            paymentModal.innerHTML = `
+                <div class="modal-content">
+                    <span class="close-payment-modal">&times;</span>
+                    <h2>Complete Payment</h2>
+                    <p>Select your preferred payment method to book your test:</p>
+
+                    <div class="payment-options">
+                        <div class="payment-option" data-method="card" onclick="selectPaymentMethod(this)">
+                            <i class="fas fa-credit-card"></i>
+                            <div>Credit/Debit Card</div>
+                        </div>
+                        <div class="payment-option" data-method="upi" onclick="selectPaymentMethod(this)">
+                            <i class="fas fa-mobile-alt"></i>
+                            <div>UPI</div>
+                        </div>
+                        <div class="payment-option" data-method="netbanking" onclick="selectPaymentMethod(this)">
+                            <i class="fas fa-university"></i>
+                            <div>Net Banking</div>
+                        </div>
+                    </div>
+
+                    <div class="payment-details">
+                        <div class="detail-row">
+                            <div class="detail-label">Test:</div>
+                            <div class="detail-value">${testName}</div>
+                        </div>
+                        <div class="detail-row">
+                            <div class="detail-label">Date & Time:</div>
+                            <div class="detail-value">${testDate}, ${testTimeSlot}</div>
+                        </div>
+                        <div class="detail-row">
+                            <div class="detail-label">Lab:</div>
+                            <div class="detail-value">${testLab}</div>
+                        </div>
+                        <div class="detail-row">
+                            <div class="detail-label">Amount:</div>
+                            <div class="detail-value">${testPrice}</div>
+                        </div>
+                    </div>
+
+                    <div class="payment-method-forms" style="margin-top:12px;">
+                        <div class="card-form" style="display:none;">
+                            <div class="form-group">
+                                <label>Card Number</label>
+                                <input type="text" id="cardNumber" maxlength="19" placeholder="1234 5678 9012 3456">
+                            </div>
+                            <div class="form-group">
+                                <label>Expiry (MM/YY)</label>
+                                <input type="text" id="cardExpiry" maxlength="5" placeholder="MM/YY">
+                            </div>
+                            <div class="form-group">
+                                <label>CVV</label>
+                                <input type="password" id="cardCVV" maxlength="4" placeholder="CVV">
+                            </div>
+                            <div class="form-group">
+                                <label>Name on Card</label>
+                                <input type="text" id="cardName" placeholder="Full Name">
+                            </div>
+                        </div>
+
+                        <div class="upi-form" style="display:none;">
+                            <div class="form-group">
+                                <label>UPI ID</label>
+                                <input type="text" id="upiId" placeholder="name@bank">
+                            </div>
+                        </div>
+
+                        <div class="netbanking-form" style="display:none;">
+                            <div class="form-group">
+                                <label>Select Bank</label>
+                                <select id="bankName">
+                                    <option value="">Select bank</option>
+                                    <option>HDFC Bank</option>
+                                    <option>ICICI Bank</option>
+                                    <option>State Bank of India</option>
+                                    <option>Axis Bank</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>User ID</label>
+                                <input type="text" id="netUserId" placeholder="NetBanking User ID">
+                            </div>
+                        </div>
+                    </div>
+
+                    <button id="completePaymentBtn" class="payment-btn" onclick="processPayment('${testName}', '${testDate}', '${testTimeSlot}', '${testLab}', '${testPrice}')">Complete Payment</button>
+
+                    <div id="successMessage" class="success-message" style="display: none;">
+                        <i class="fas fa-check-circle"></i>
+                        <h3>Payment Successful!</h3>
+                        <p>Your test has been booked successfully. You will receive a confirmation email shortly.</p>
+                        <p>Your booking ID: <strong id="bookingId"></strong></p>
+                    </div>
+                </div>
+            `;
+             
+             document.body.appendChild(paymentModal);
+             paymentModal.style.display = 'block';
+             
+             // Close payment modal when clicking the X
+             document.querySelector('.close-payment-modal').addEventListener('click', () => {
+                 paymentModal.style.display = 'none';
+                 document.body.removeChild(paymentModal);
+             });
+         });
+         
+        // Select payment method (global for inline onclick)
+        window.selectPaymentMethod = function(element) {
+            document.querySelectorAll('.payment-option').forEach(option => {
+                option.classList.remove('selected');
+            });
+            element.classList.add('selected');
+
+            // Toggle method forms
+            const method = element.dataset.method;
+            const cardForm = document.querySelector('#paymentModal .card-form');
+            const upiForm = document.querySelector('#paymentModal .upi-form');
+            const netForm = document.querySelector('#paymentModal .netbanking-form');
+            if (cardForm && upiForm && netForm) {
+                cardForm.style.display = method === 'card' ? 'block' : 'none';
+                upiForm.style.display = method === 'upi' ? 'block' : 'none';
+                netForm.style.display = method === 'netbanking' ? 'block' : 'none';
+            }
+        }
+         
+        // Process payment (global for inline onclick)
+        window.processPayment = function(testName, testDate, testTimeSlot, testLab, testPrice) {
+            const selectedMethod = document.querySelector('#paymentModal .payment-option.selected');
+            if (!selectedMethod) {
+                alert('Please select a payment method');
+                return;
+            }
+
+            const method = selectedMethod.dataset.method;
+            // Validate per method
+            if (method === 'card') {
+                const num = (document.getElementById('cardNumber')?.value || '').replace(/\s+/g, '');
+                const exp = document.getElementById('cardExpiry')?.value || '';
+                const cvv = document.getElementById('cardCVV')?.value || '';
+                const name = document.getElementById('cardName')?.value || '';
+                if (num.length < 13 || num.length > 19 || !/^\d+$/.test(num)) { alert('Enter a valid card number'); return; }
+                if (!/^\d{2}\/(\d{2})$/.test(exp)) { alert('Enter expiry in MM/YY'); return; }
+                if (!/^\d{3,4}$/.test(cvv)) { alert('Enter a valid CVV'); return; }
+                if (!name.trim()) { alert('Enter name on card'); return; }
+            } else if (method === 'upi') {
+                const upi = document.getElementById('upiId')?.value || '';
+                if (!/^\w[\w\.\-]{1,}@\w[\w\.\-]{1,}$/.test(upi)) { alert('Enter a valid UPI ID'); return; }
+            } else if (method === 'netbanking') {
+                const bank = document.getElementById('bankName')?.value || '';
+                const user = document.getElementById('netUserId')?.value || '';
+                if (!bank) { alert('Select your bank'); return; }
+                if (!user.trim()) { alert('Enter NetBanking User ID'); return; }
+            }
+
+            const paymentBtn = document.getElementById('completePaymentBtn');
+            paymentBtn.textContent = 'Processing...';
+            paymentBtn.disabled = true;
+
+            // Simulate payment processing
+            setTimeout(() => {
+                const bookingId = 'LT' + Math.floor(100000 + Math.random() * 900000);
+                document.getElementById('bookingId').textContent = bookingId;
+                document.getElementById('successMessage').style.display = 'block';
+                paymentBtn.style.display = 'none';
+
+                const bookedTests = JSON.parse(localStorage.getItem('bookedLabTests') || '[]');
+                bookedTests.push({ id: bookingId, name: testName, date: testDate, time: testTimeSlot, lab: testLab, price: testPrice });
+                localStorage.setItem('bookedLabTests', JSON.stringify(bookedTests));
+
+                setTimeout(() => {
+                    document.getElementById('paymentModal').style.display = 'none';
+                    document.getElementById('testDetailsModal').style.display = 'none';
+                    const pm = document.getElementById('paymentModal');
+                    if (pm) document.body.removeChild(pm);
+                    // Redirect to Hospital/Lab interface portal
+                    window.location.href = 'hospital-lab-interface.html';
+                }, 2000);
+            }, 1500);
+        }
+    });
+    </script>
+</body>
+</html>
+        // Auth modal controls
+        const authModal = document.getElementById('authModal');
+        const openAuthBtn = document.getElementById('openAuthBtn');
+        const closeAuthBtn = document.getElementById('closeAuthBtn');
+        const tabLogin = document.getElementById('tabLogin');
+        const tabSignup = document.getElementById('tabSignup');
+        const loginForm = document.getElementById('loginForm');
+        const signupForm = document.getElementById('signupForm');
+
+        function switchTab(which) {
+            if (which === 'login') {
+                tabLogin.classList.add('active'); tabSignup.classList.remove('active');
+                loginForm.classList.add('active'); signupForm.classList.remove('active');
+            } else {
+                tabSignup.classList.add('active'); tabLogin.classList.remove('active');
+                signupForm.classList.add('active'); loginForm.classList.remove('active');
+            }
+        }
+        tabLogin.addEventListener('click', () => switchTab('login'));
+        tabSignup.addEventListener('click', () => switchTab('signup'));
+
+        openAuthBtn.addEventListener('click', () => { authModal.style.display = 'block'; });
+        closeAuthBtn.addEventListener('click', () => { authModal.style.display = 'none'; });
+
+        // Persisted state
+        const portalContainer = document.getElementById('portalContainer');
+        const labMain = document.querySelector('.lab-main');
+        const labUser = JSON.parse(localStorage.getItem('labUser') || 'null');
+        const labLoggedIn = JSON.parse(localStorage.getItem('labLoggedIn') || 'false');
+
+        function showPortal() {
+            if (!labUser) return;
+            document.getElementById('portalLabName').textContent = labUser.labName || 'Your Lab';
+            document.getElementById('portalLabAddress').textContent = labUser.address || '';
+            document.getElementById('portalUserName').textContent = labUser.name || '';
+            // Fill settings profile
+            document.getElementById('settingsProfile').innerHTML = `
+                <div><strong>Name:</strong> ${labUser.name}</div>
+                <div><strong>Email:</strong> ${labUser.email}</div>
+                <div><strong>Phone:</strong> ${labUser.phone}</div>
+                <div><strong>Lab:</strong> ${labUser.labName}</div>
+                <div><strong>Address:</strong> ${labUser.address}</div>
+            `;
+            // Report history from bookedLabTests
+            const tbody = document.getElementById('reportHistoryBody');
+            const bookings = JSON.parse(localStorage.getItem('bookedLabTests') || '[]');
+            if (bookings.length) {
+                tbody.innerHTML = bookings.map(b => `
+                    <tr><td>${b.id}</td><td>${b.name}</td><td>${b.date}</td><td>${b.time}</td><td>${b.lab}</td><td>${b.price}</td></tr>
+                `).join('');
+            }
+            // Rewards summary: 10% of total
+            const total = bookings.reduce((sum, b) => {
+                const amt = parseInt(String(b.price).replace(/[^\d]/g, '')) || 0;
+                return sum + amt;
+            }, 0);
+            const rewards = Math.round(total * 0.1);
+            document.getElementById('rewardsSummary').textContent = total ? `Total: ₹${total} • Rewards Earned: ₹${rewards}` : 'No rewards yet';
+            // Scheduled reports (use future bookings)
+            document.getElementById('scheduledReports').innerHTML = bookings.length ? bookings.map(b => `<div class="notification">Report for ${b.name} scheduled on ${b.date} at ${b.time}</div>`).join('') : 'No scheduled reports';
+            // Recycle history
+            const rh = JSON.parse(localStorage.getItem('recycleHistory') || '[]');
+            document.getElementById('recycleHistoryList').innerHTML = rh.length ? rh.map(x => `<li>${x.date}: ${x.type} - ${x.weight} kg</li>`).join('') : '<li>No recycle entries</li>';
+            // Toggle views
+            portalContainer.style.display = 'block';
+            labMain.classList.add('hidden');
+        }
+
+        // Auto-open auth modal on first visit if not logged in
+        if (!labLoggedIn) {
+            authModal.style.display = 'block';
+        } else {
+            showPortal();
+        }
+
+        // Signup
+        document.getElementById('signupBtn').addEventListener('click', () => {
+            const name = document.getElementById('suName').value.trim();
+            const email = document.getElementById('suEmail').value.trim();
+            const phone = document.getElementById('suPhone').value.trim();
+            const labName = document.getElementById('suLabName').value.trim();
+            const address = document.getElementById('suAddress').value.trim();
+            const pass = document.getElementById('suPassword').value;
+            const pass2 = document.getElementById('suPassword2').value;
+            if (!name || !email || !phone || !labName || !address || !pass || !pass2) { alert('Please fill all fields'); return; }
+            if (pass !== pass2) { alert('Passwords do not match'); return; }
+            const user = { name, email, phone, labName, address, pass };
+            localStorage.setItem('labUser', JSON.stringify(user));
+            localStorage.setItem('labCredentials', JSON.stringify({ id: email || phone, pass }));
+            localStorage.setItem('labLoggedIn', 'true');
+            authModal.style.display = 'none';
+            showPortal();
+        });
+
+        // Login
+        document.getElementById('loginBtn').addEventListener('click', () => {
+            const id = document.getElementById('loginId').value.trim();
+            const pass = document.getElementById('loginPassword').value;
+            const creds = JSON.parse(localStorage.getItem('labCredentials') || 'null');
+            if (!creds) { alert('No account found. Please sign up first.'); switchTab('signup'); return; }
+            if (creds.id !== (labUser?.email || labUser?.phone) && creds.id !== id) { alert('Invalid login ID'); return; }
+            if (creds.pass !== pass) { alert('Invalid password'); return; }
+            localStorage.setItem('labLoggedIn', 'true');
+            authModal.style.display = 'none';
+            showPortal();
+        });
+
+        // Logout
+        document.getElementById('logoutBtn').addEventListener('click', () => {
+            localStorage.setItem('labLoggedIn', 'false');
+            portalContainer.style.display = 'none';
+            labMain.classList.remove('hidden');
+        });
+
+        // Sidebar navigation in portal
+        document.querySelectorAll('.portal-sidebar a[data-section]').forEach(link => {
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+                document.querySelectorAll('.portal-sidebar a').forEach(a => a.classList.remove('active'));
+                link.classList.add('active');
+                const section = link.dataset.section;
+                document.querySelectorAll('.portal-content > div').forEach(div => div.classList.add('hidden'));
+                document.getElementById(`section-${section}`).classList.remove('hidden');
+            });
+        });

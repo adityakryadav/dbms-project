@@ -1,0 +1,712 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rewards - Genricycle</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        .rewards-container {
+            max-width: 1000px;
+            margin: 30px auto;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .rewards-header {
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .rewards-header h1 {
+            margin: 0;
+            color: #333;
+        }
+        .points-card {
+            background: linear-gradient(135deg, #4CAF50, #2E7D32);
+            color: white;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        .points-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .points-balance {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin: 0;
+        }
+        .points-label {
+            font-size: 1rem;
+            opacity: 0.9;
+            margin: 5px 0 0 0;
+        }
+        .points-actions {
+            display: flex;
+            gap: 10px;
+        }
+        .btn-points {
+            background-color: rgba(255,255,255,0.2);
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background-color 0.2s;
+        }
+        .btn-points:hover {
+            background-color: rgba(255,255,255,0.3);
+        }
+        .rewards-section {
+            margin-bottom: 30px;
+        }
+        .section-title {
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+            color: #333;
+            font-weight: 600;
+        }
+        .rewards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+        }
+        .reward-card {
+            border: 1px solid #eee;
+            border-radius: 8px;
+            overflow: hidden;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .reward-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        .reward-image {
+            height: 150px;
+            background-color: #f0f0f0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #999;
+        }
+        .reward-details {
+            padding: 15px;
+        }
+        .reward-title {
+            font-weight: 600;
+            margin: 0 0 10px 0;
+            color: #333;
+        }
+        .reward-description {
+            color: #666;
+            margin: 0 0 15px 0;
+            font-size: 14px;
+        }
+        .reward-points {
+            font-weight: 600;
+            color: #4CAF50;
+            margin-bottom: 15px;
+        }
+        .btn-redeem {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            width: 100%;
+            transition: background-color 0.2s;
+        }
+        .btn-redeem:hover {
+            background-color: #3d8b40;
+        }
+        .history-section {
+            margin-top: 40px;
+        }
+        .history-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 15px 0;
+            border-bottom: 1px solid #eee;
+        }
+        .history-details {
+            flex: 1;
+        }
+        .history-title {
+            font-weight: 600;
+            margin: 0 0 5px 0;
+            color: #333;
+        }
+        .history-date {
+            color: #666;
+            font-size: 14px;
+            margin: 0;
+        }
+        .history-points {
+            font-weight: 600;
+        }
+        .points-earned {
+            color: #4CAF50;
+        }
+        .points-redeemed {
+            color: #F44336;
+        }
+        .earn-points-card {
+            background: linear-gradient(135deg, #81C784, #4CAF50);
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+            color: white;
+            display: flex;
+            align-items: center;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+        .earn-points-icon {
+            font-size: 2.5rem;
+            margin-right: 20px;
+        }
+        .earn-points-content {
+            flex: 1;
+        }
+        .earn-points-content h3 {
+            margin: 0 0 10px 0;
+            font-size: 1.2rem;
+        }
+        .earn-points-content p {
+            margin: 0;
+            opacity: 0.9;
+        }
+        .earn-points-btn {
+            background-color: white;
+            color: #4CAF50;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 5px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        .earn-points-btn:hover {
+            background-color: #f0f0f0;
+        }
+        .tier-section {
+            margin-top: 40px;
+            background-color: #f9f9f9;
+            border-radius: 8px;
+            padding: 20px;
+        }
+        .tier-info {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .tier-badge {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background-color: #4CAF50;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 15px;
+        }
+        .tier-details h3 {
+            margin: 0 0 5px 0;
+            color: #333;
+        }
+        .tier-details p {
+            margin: 0;
+            color: #666;
+            font-size: 14px;
+        }
+        .progress-container {
+            margin-bottom: 15px;
+        }
+        .progress-bar {
+            height: 8px;
+            background-color: #e0e0e0;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        .progress-fill {
+            height: 100%;
+            background-color: #4CAF50;
+            width: 65%;
+        }
+        .progress-labels {
+            display: flex;
+            justify-content: space-between;
+            font-size: 12px;
+            color: #666;
+            margin-top: 5px;
+        }
+        .tier-benefits {
+            margin-top: 15px;
+        }
+        .benefit-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        .benefit-icon {
+            color: #4CAF50;
+            margin-right: 10px;
+        }
+        .benefit-text {
+            font-size: 14px;
+            color: #333;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header Section -->
+    <header class="header">
+        <div class="container">
+            <!-- Left side - Logo and Site Name -->
+            <div class="logo-section">
+                <div class="logo">
+                    <img src="Gemini_Generated_Image_l95q43l95q43l95q.png" alt="Genricycle logo" class="logo-img" />
+                    <span class="site-name">Genricycle</span>
+                </div>
+            </div>
+
+            <!-- Right side - Navigation -->
+            <nav class="navigation">
+                <ul class="nav-menu">
+                    <li class="search-section">
+                        <div class="search-container">
+                            <input type="text" placeholder="Search medications..." class="search-input" id="searchInput">
+                            <button class="search-btn" onclick="performSearch()"><i class="fas fa-search"></i></button>
+                        </div>
+                    </li>
+                    <li><a href="contact.html" class="nav-link">Contact Us</a></li>
+                    <li><a href="feedback.html" class="nav-link">Feedback</a></li>
+                    <li>
+                        <a href="#" class="nav-link cart-link" onclick="openCartModal(); return false;" style="font-size: 1.2rem; position: relative;">
+                            <i class="fas fa-shopping-cart"></i>
+                            <span class="cart-count" style="display:none; position:absolute; top:-6px; right:-10px; background:#FF5722; color:#fff; border-radius:50%; font-size:0.7rem; padding:2px 6px; min-width:18px; text-align:center;">0</span>
+                        </a>
+                    </li>
+                    <li class="auth-section">
+                        <!-- Profile dropdown (shown when logged in) -->
+                        <div class="profile-dropdown" id="profileDropdown">
+                            <div class="profile-trigger" onclick="toggleProfileDropdown()">
+                                <div class="profile-avatar">
+                                    <i class="fas fa-user"></i>
+                                </div>
+                                <span class="profile-name" id="profileName">John Doe</span>
+                                <i class="fas fa-chevron-down dropdown-arrow"></i>
+                            </div>
+                            <div class="dropdown-menu" id="dropdownMenu">
+                                <a href="profile.html" class="dropdown-item">
+                                    <i class="fas fa-user"></i>
+                                    My Profile
+                                </a>
+                                <a href="settings.html" class="dropdown-item">
+                                    <i class="fas fa-cog"></i>
+                                    Settings
+                                </a>
+                                <a href="transactions.html" class="dropdown-item">
+                                    <i class="fas fa-history"></i>
+                                    Transaction History
+                                </a>
+                                <a href="orders.html" class="dropdown-item">
+                                    <i class="fas fa-shopping-bag"></i>
+                                    Order History
+                                </a>
+                                <a href="rewards.html" class="dropdown-item active">
+                                    <i class="fas fa-gift"></i>
+                                    Rewards
+                                </a>
+                                <a href="#" class="dropdown-item">
+                                    <i class="fas fa-robot"></i>
+                                    Chatbot
+                                </a>
+                                <hr class="dropdown-divider">
+                                <a href="#" class="dropdown-item" onclick="logout()">
+                                    <i class="fas fa-sign-out-alt"></i>
+                                    Logout
+                                </a>
+                            </div>
+                        </div>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <div class="rewards-container">
+        <div class="rewards-header">
+            <h1>Rewards Program</h1>
+        </div>
+
+        <!-- Points Card -->
+        <div class="points-card">
+            <div class="points-info">
+                <div>
+                    <h2 class="points-balance" id="pointsBalance">1,250</h2>
+                    <p class="points-label">Available Points</p>
+                </div>
+                <div class="points-actions">
+                    <button class="btn-points" id="earnMoreBtn">Earn More</button>
+                    <button class="btn-points" id="redeemBtn">Redeem</button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- How to Earn Points (limited to recycle, birthday, new user bonus) -->
+        <div class="earn-points-card" id="earn-points-section">
+            <div class="earn-points-icon">
+                <i class="fas fa-gift"></i>
+            </div>
+            <div class="earn-points-content">
+                <h3>How You Earn Points</h3>
+                <p>
+                    - Recycle: Approved recycling pickups earn points.
+                    <br>
+                    - Birthday: 500 bonus points on your birthday.
+                    <br>
+                    - New User Bonus: Welcome reward when you sign up.
+                </p>
+            </div>
+        </div>
+
+        <!-- Available Rewards -->
+        <div class="rewards-section" id="redeem-rewards-section">
+            <h2 class="section-title">Available Rewards</h2>
+            <div class="rewards-grid">
+                <!-- Reward 1 -->
+                <div class="reward-card">
+                    <div class="reward-image">
+                        <i class="fas fa-percentage fa-3x"></i>
+                    </div>
+                    <div class="reward-details">
+                        <h3 class="reward-title">10% Off Your Next Order</h3>
+                        <p class="reward-description">Get 10% off on your next purchase. Valid for 30 days after redemption.</p>
+                        <p class="reward-points">500 points</p>
+                        <button class="btn-redeem" data-points="500">Redeem Reward</button>
+                    </div>
+                </div>
+
+                <!-- Reward 2 -->
+                <div class="reward-card">
+                    <div class="reward-image">
+                        <i class="fas fa-truck fa-3x"></i>
+                    </div>
+                    <div class="reward-details">
+                        <h3 class="reward-title">Free Shipping</h3>
+                        <p class="reward-description">Free shipping on your next order. No minimum purchase required.</p>
+                        <p class="reward-points">300 points</p>
+                        <button class="btn-redeem" data-points="300">Redeem Reward</button>
+                    </div>
+                </div>
+
+                <!-- Reward 3 -->
+                <div class="reward-card">
+                    <div class="reward-image">
+                        <i class="fas fa-gift fa-3x"></i>
+                    </div>
+                    <div class="reward-details">
+                        <h3 class="reward-title">Free Health Checkup</h3>
+                        <p class="reward-description">Get a free basic health checkup at any of our partner clinics.</p>
+                        <p class="reward-points">1,000 points</p>
+                        <button class="btn-redeem" data-points="1000">Redeem Reward</button>
+                    </div>
+                </div>
+
+                <!-- Reward 4 -->
+                <div class="reward-card">
+                    <div class="reward-image">
+                        <i class="fas fa-pills fa-3x"></i>
+                    </div>
+                    <div class="reward-details">
+                        <h3 class="reward-title">Free Generic Medication</h3>
+                        <p class="reward-description">Get a free generic medication of your choice (up to ₹200 value).</p>
+                        <p class="reward-points">800 points</p>
+                        <button class="btn-redeem" data-points="800">Redeem Reward</button>
+                    </div>
+                </div>
+
+                <!-- Reward 5 -->
+                <div class="reward-card">
+                    <div class="reward-image">
+                        <i class="fas fa-user-md fa-3x"></i>
+                    </div>
+                    <div class="reward-details">
+                        <h3 class="reward-title">Doctor Consultation</h3>
+                        <p class="reward-description">Free online consultation with a general physician.</p>
+                        <p class="reward-points">1,500 points</p>
+                        <button class="btn-redeem" data-points="1500">Redeem Reward</button>
+                    </div>
+                </div>
+
+                <!-- Reward 6 -->
+                <div class="reward-card">
+                    <div class="reward-image">
+                        <i class="fas fa-heartbeat fa-3x"></i>
+                    </div>
+                    <div class="reward-details">
+                        <h3 class="reward-title">Health Package Discount</h3>
+                        <p class="reward-description">20% off on any health package or subscription.</p>
+                        <p class="reward-points">1,200 points</p>
+                        <button class="btn-redeem" data-points="1200">Redeem Reward</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Membership Tier -->
+        <div class="tier-section">
+            <h2 class="section-title">Membership Tier</h2>
+            <div class="tier-info">
+                <div class="tier-badge">
+                    <i class="fas fa-award fa-2x"></i>
+                </div>
+                <div class="tier-details">
+                    <h3>Silver Member</h3>
+                    <p>You're 3,500 points away from Gold status</p>
+                </div>
+            </div>
+            <div class="progress-container">
+                <div class="progress-bar">
+                    <div class="progress-fill"></div>
+                </div>
+                <div class="progress-labels">
+                    <span>Silver (1,250/5,000)</span>
+                    <span>Gold (5,000)</span>
+                    <span>Platinum (10,000)</span>
+                </div>
+            </div>
+            <div class="tier-benefits">
+                <h4>Your Silver Benefits:</h4>
+                <div class="benefit-item">
+                    <div class="benefit-icon"><i class="fas fa-check-circle"></i></div>
+                    <div class="benefit-text">Earn 1 point for every ₹10 spent</div>
+                </div>
+                <div class="benefit-item">
+                    <div class="benefit-icon"><i class="fas fa-check-circle"></i></div>
+                    <div class="benefit-text">Birthday reward: 500 bonus points</div>
+                </div>
+                <div class="benefit-item">
+                    <div class="benefit-icon"><i class="fas fa-check-circle"></i></div>
+                    <div class="benefit-text">Early access to sales</div>
+                </div>
+                <div class="benefit-item">
+                    <div class="benefit-icon"><i class="fas fa-check-circle"></i></div>
+                    <div class="benefit-text">Monthly newsletter with health tips</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Points History -->
+        <div class="history-section">
+            <h2 class="section-title">Points History</h2>
+            <div class="history-list">
+                <div class="history-item">
+                    <div class="history-details">
+                        <h3 class="history-title">Recycle: Household Medicines Collected</h3>
+                        <p class="history-date">June 2, 2023</p>
+                    </div>
+                    <div class="history-points points-earned">+150 points</div>
+                </div>
+                <div class="history-item">
+                    <div class="history-details">
+                        <h3 class="history-title">Birthday Bonus: Happy Birthday!</h3>
+                        <p class="history-date">May 15, 2023</p>
+                    </div>
+                    <div class="history-points points-earned">+500 points</div>
+                </div>
+                <div class="history-item">
+                    <div class="history-details">
+                        <h3 class="history-title">New User Bonus: Welcome to Genricycle</h3>
+                        <p class="history-date">May 1, 2023</p>
+                    </div>
+                    <div class="history-points points-earned">+300 points</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>About Genricycle</h3>
+                    <p>Providing affordable generic medications and healthcare services to everyone.</p>
+                </div>
+                <div class="footer-section">
+                    <h3>Quick Links</h3>
+                    <ul>
+                        <li><a href="index.html">Home</a></li>
+                        <li><a href="about.html">About Us</a></li>
+                        <li><a href="contact.html">Contact</a></li>
+                        <li><a href="feedback.html">Feedback</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h3>Contact Us</h3>
+                    <p><i class="fas fa-map-marker-alt"></i> 123 Healthcare Ave, Mumbai</p>
+                    <p><i class="fas fa-phone"></i> +91 1234567890</p>
+                    <p><i class="fas fa-envelope"></i> info@genricycle.com</p>
+                </div>
+                <div class="footer-section">
+                    <h3>Follow Us</h3>
+                    <div class="social-icons">
+                        <a href="#"><i class="fab fa-facebook"></i></a>
+                        <a href="#"><i class="fab fa-twitter"></i></a>
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                        <a href="#"><i class="fab fa-linkedin"></i></a>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2023 Genricycle. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Toggle profile dropdown
+        function toggleProfileDropdown() {
+            const dropdownMenu = document.getElementById('dropdownMenu');
+            dropdownMenu.classList.toggle('show');
+        }
+
+        // Close dropdown when clicking outside
+        window.onclick = function(event) {
+            if (!event.target.matches('.profile-trigger') && 
+                !event.target.matches('.profile-avatar') && 
+                !event.target.matches('.profile-name') && 
+                !event.target.matches('.dropdown-arrow')) {
+                const dropdowns = document.getElementsByClassName('dropdown-menu');
+                for (let i = 0; i < dropdowns.length; i++) {
+                    const openDropdown = dropdowns[i];
+                    if (openDropdown.classList.contains('show')) {
+                        openDropdown.classList.remove('show');
+                    }
+                }
+            }
+        }
+
+        // Load user data from localStorage and gate cart visibility
+        document.addEventListener('DOMContentLoaded', function() {
+            const savedUserRaw = localStorage.getItem('genricycle_user') || localStorage.getItem('userData');
+            const isLoggedIn = Boolean(savedUserRaw);
+            // Show cart link only when logged in
+            document.querySelectorAll('.cart-link').forEach(link => {
+                link.style.display = isLoggedIn ? 'block' : 'none';
+            });
+
+            const userData = JSON.parse(localStorage.getItem('userData'));
+            if (userData && userData.name) {
+                document.getElementById('profileName').textContent = userData.name;
+            }
+
+            // Rewards Interactions
+            const pointsBalanceEl = document.getElementById('pointsBalance');
+
+            function setPointsDisplay(val) {
+                pointsBalanceEl.textContent = (val || 0).toLocaleString();
+            }
+
+            function persistUserPoints(val) {
+                if (!userData) return;
+                userData.points = val;
+                localStorage.setItem('userData', JSON.stringify(userData));
+                if (localStorage.getItem('genricycle_user')) {
+                    localStorage.setItem('genricycle_user', JSON.stringify(userData));
+                }
+            }
+
+            // Initialize points display
+            const initialPoints = (userData && typeof userData.points === 'number') ? userData.points : 1250;
+            if (userData && typeof userData.points !== 'number') {
+                persistUserPoints(initialPoints);
+            }
+            setPointsDisplay(initialPoints);
+
+            // Scroll buttons
+            const earnBtn = document.getElementById('earnMoreBtn');
+            const redeemBtn = document.getElementById('redeemBtn');
+            if (earnBtn) {
+                earnBtn.addEventListener('click', () => {
+                    const target = document.getElementById('earn-points-section');
+                    if (target) target.scrollIntoView({ behavior: 'smooth' });
+                });
+            }
+            if (redeemBtn) {
+                redeemBtn.addEventListener('click', () => {
+                    const target = document.getElementById('redeem-rewards-section');
+                    if (target) target.scrollIntoView({ behavior: 'smooth' });
+                });
+            }
+
+            // Redeem actions
+            document.querySelectorAll('.btn-redeem').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    if (!isLoggedIn) {
+                        alert('Please log in to redeem rewards.');
+                        return;
+                    }
+                    const cost = parseInt(btn.getAttribute('data-points'), 10) || 0;
+                    const current = (userData && userData.points) || 0;
+                    if (current < cost) {
+                        alert('Not enough points to redeem this reward.');
+                        return;
+                    }
+                    const next = current - cost;
+                    persistUserPoints(next);
+                    setPointsDisplay(next);
+                    btn.disabled = true;
+                    btn.textContent = 'Redeemed';
+
+                    // Add to points history visually
+                    const card = btn.closest('.reward-card');
+                    const title = card ? card.querySelector('.reward-title')?.textContent || 'Reward Redeemed' : 'Reward Redeemed';
+                    const historyList = document.querySelector('.history-list');
+                    if (historyList) {
+                        const item = document.createElement('div');
+                        item.className = 'history-item';
+                        item.innerHTML = `
+                            <div class="history-details">
+                                <h3 class="history-title">Redeemed: ${title}</h3>
+                                <p class="history-date">${new Date().toLocaleDateString()}</p>
+                            </div>
+                            <div class="history-points points-redeemed">-${cost} points</div>
+                        `;
+                        historyList.prepend(item);
+                    }
+
+                    // Persist redemption transaction for cross-page history
+                    try {
+                        const entry = {
+                            id: Date.now(),
+                            type: 'redemption',
+                            title: title,
+                            points: -cost,
+                            date: new Date().toISOString()
+                        };
+                        const tx = JSON.parse(localStorage.getItem('genricycle_transactions') || '[]');
+                        tx.unshift(entry);
+                        localStorage.setItem('genricycle_transactions', JSON.stringify(tx));
+                    } catch(e) { /* no-op */ }
+                });
+            });
+        });
+    </script>
+</body>
+</html>

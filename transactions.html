@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Transaction History - Genricycle</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        .transactions-container { max-width: 1000px; margin: 30px auto; padding: 20px; background:#fff; border-radius:10px; box-shadow:0 2px 10px rgba(0,0,0,0.1); }
+        .transactions-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; }
+        .transactions-header h1 { margin:0; color:#333; }
+        .filters { display:flex; gap:10px; align-items:center; }
+        .filter-btn { border:1px solid #e0e0e0; background:#f9f9f9; color:#333; padding:6px 12px; border-radius:6px; cursor:pointer; }
+        .filter-btn.active { background:#4CAF50; color:#fff; border-color:#4CAF50; }
+        .transactions-list { margin-top:10px; }
+        .tx-item { display:flex; justify-content:space-between; align-items:flex-start; border-bottom:1px solid #eee; padding:12px 0; }
+        .tx-left { display:flex; gap:12px; align-items:flex-start; }
+        .tx-icon { width:36px; height:36px; border-radius:50%; display:flex; align-items:center; justify-content:center; background:#f0f0f0; color:#666; }
+        .tx-title { margin:0; font-weight:600; color:#333; }
+        .tx-meta { margin:2px 0 0; color:#666; font-size:0.9rem; }
+        .tx-right { text-align:right; }
+        .tx-amount { font-weight:600; }
+        .tx-points-earned { color:#4CAF50; }
+        .tx-points-redeemed { color:#F44336; }
+        .empty-state { text-align:center; color:#666; padding:30px 0; }
+        .details { margin-top:8px; font-size:0.9rem; color:#555; }
+        .badge { display:inline-block; padding:2px 8px; border-radius:12px; font-size:0.8rem; }
+        .badge.pending { background:#FFF3CD; color:#8A6D3B; }
+        .badge.completed { background:#E7F6E7; color:#2E7D32; }
+        .badge.cancelled { background:#FDECEA; color:#C62828; }
+    </style>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const savedUserRaw = localStorage.getItem('genricycle_user') || localStorage.getItem('userData');
+            const isLoggedIn = Boolean(savedUserRaw);
+            document.querySelectorAll('.cart-link').forEach(link => { link.style.display = isLoggedIn ? 'block' : 'none'; });
+            const userData = JSON.parse(localStorage.getItem('userData') || 'null');
+            if (userData && userData.name) { const pn = document.getElementById('profileName'); if (pn) pn.textContent = userData.name; }
+
+            const txListEl = document.getElementById('transactionsList');
+            const filterBtns = document.querySelectorAll('.filter-btn');
+
+            function getTransactions(){
+                const arr = [];
+                // Medicine returns
+                const returns = JSON.parse(localStorage.getItem('medicine_return_history')||'[]');
+                returns.forEach(r=>{
+                    arr.push({
+                        id: r.id,
+                        type: 'return',
+                        title: 'Medicine Return',
+                        date: r.date || new Date().toISOString(),
+                        points: r.points || 0,
+                        status: r.status || 'pending',
+                        details: `${(r.medicines||[]).length} item(s) • Pickup ${r.pickupDate || ''}`,
+                    });
+                });
+                // Lab test bookings
+                const bookings = JSON.parse(localStorage.getItem('bookedLabTests')||'[]');
+                bookings.forEach(b=>{
+                    arr.push({
+                        id: b.id,
+                        type: 'lab',
+                        title: `Lab Test: ${b.name}`,
+                        date: b.date || new Date().toISOString(),
+                        amount: String(b.price || '').replace(/[^\d]/g,'') || null,
+                        details: `${b.lab || ''} • ${b.date || ''} ${b.time || ''}`,
+                    });
+                });
+                // Reward redemptions
+                const redemptions = JSON.parse(localStorage.getItem('genricycle_transactions')||'[]');
+                redemptions.filter(t=>t.type==='redemption').forEach(t=>{
+                    arr.push({
+                        id: t.id,
+                        type: 'redemption',
+                        title: t.title || 'Reward Redeemed',
+                        date: t.date || new Date().toISOString(),
+                        points: t.points || 0,
+                    });
+                });
+                // Sort desc by date
+                arr.sort((a,b)=> new Date(b.date) - new Date(a.date));
+                return arr;
+            }
+
+            function render(transactions){
+                if (!transactions.length){
+                    txListEl.innerHTML = '<div class="empty-state"><i class="fas fa-file-invoice" style="font-size:2rem;"></i><p>No transactions yet.</p></div>';
+                    return;
+                }
+                txListEl.innerHTML = '';
+                transactions.forEach(tx=>{
+                    const row = document.createElement('div');
+                    row.className = 'tx-item';
+                    const icon = tx.type==='return' ? 'fa-undo' : (tx.type==='lab' ? 'fa-vials' : 'fa-gift');
+                    const rightVal = tx.points ? `${tx.points>0?'+':''}${tx.points} pts` : (tx.amount ? `₹${tx.amount}` : '');
+                    const pointsCls = tx.points ? (tx.points>0 ? 'tx-points-earned' : 'tx-points-redeemed') : '';
+                    const statusBadge = tx.status ? `<span class="badge ${tx.status}">${tx.status}</span>` : '';
+                    row.innerHTML = `
+                        <div class="tx-left">
+                            <div class="tx-icon"><i class="fas ${icon}"></i></div>
+                            <div>
+                                <h3 class="tx-title">${tx.type==='redemption' ? 'Redeemed: ' : ''}${tx.title}</h3>
+                                <p class="tx-meta">${new Date(tx.date).toLocaleDateString()} ${statusBadge}</p>
+                                ${tx.details ? `<div class="details">${tx.details}</div>` : ''}
+                            </div>
+                        </div>
+                        <div class="tx-right">
+                            <div class="tx-amount ${pointsCls}">${rightVal}</div>
+                        </div>
+                    `;
+                    txListEl.appendChild(row);
+                });
+            }
+
+            function applyFilter(type){
+                filterBtns.forEach(b=>b.classList.remove('active'));
+                const btn = document.querySelector(`.filter-btn[data-type="${type}"]`);
+                if (btn) btn.classList.add('active');
+                const all = getTransactions();
+                const filtered = type==='all' ? all : all.filter(t=>t.type===type);
+                render(filtered);
+            }
+
+            filterBtns.forEach(btn=>{
+                btn.addEventListener('click',()=> applyFilter(btn.dataset.type));
+            });
+
+            applyFilter('all');
+        });
+
+        // Minimal header interactions
+        function toggleProfileDropdown(){ const m=document.getElementById('dropdownMenu'); if(m) m.classList.toggle('show'); }
+        window.onclick = function(event){
+            if (!event.target.matches('.profile-trigger') && !event.target.matches('.profile-avatar') && !event.target.matches('.profile-name') && !event.target.matches('.dropdown-arrow')){
+                const d=document.getElementsByClassName('dropdown-menu');
+                for(let i=0;i<d.length;i++){ const o=d[i]; if(o.classList.contains('show')) o.classList.remove('show'); }
+            }
+        };
+        function logout(){ localStorage.removeItem('genricycle_user'); alert('Logged out'); location.reload(); }
+    </script>
+</head>
+<body>
+    <!-- Header Section -->
+    <header class="header">
+        <div class="container">
+            <div class="logo-section">
+                <div class="logo">
+                    <img src="Gemini_Generated_Image_l95q43l95q43l95q.png" alt="Genricycle logo" class="logo-img" />
+                    <span class="site-name">Genricycle</span>
+                </div>
+            </div>
+            <nav class="navigation">
+                <ul class="nav-menu">
+                    <li class="search-section">
+                        <div class="search-container">
+                            <input type="text" placeholder="Search medications..." class="search-input" id="searchInput">
+                            <button class="search-btn"><i class="fas fa-search"></i></button>
+                        </div>
+                    </li>
+                    <li><a href="contact.html" class="nav-link">Contact Us</a></li>
+                    <li><a href="feedback.html" class="nav-link">Feedback</a></li>
+                    <li>
+                        <a href="#" class="nav-link cart-link" onclick="return false;" style="font-size: 1.2rem; position: relative; display:none;">
+                            <i class="fas fa-shopping-cart"></i>
+                            <span class="cart-count" style="display:none; position:absolute; top:-6px; right:-10px; background:#FF5722; color:#fff; border-radius:50%; font-size:0.7rem; padding:2px 6px; min-width:18px; text-align:center;">0</span>
+                        </a>
+                    </li>
+                    <li class="auth-section">
+                        <div class="profile-dropdown" id="profileDropdown">
+                            <div class="profile-trigger" onclick="toggleProfileDropdown()">
+                                <div class="profile-avatar">
+                                    <i class="fas fa-user"></i>
+                                </div>
+                                <span class="profile-name" id="profileName">John Doe</span>
+                                <i class="fas fa-chevron-down dropdown-arrow"></i>
+                            </div>
+                            <div class="dropdown-menu" id="dropdownMenu">
+                                <a href="profile.html" class="dropdown-item"><i class="fas fa-user"></i> My Profile</a>
+                                <a href="settings.html" class="dropdown-item"><i class="fas fa-cog"></i> Settings</a>
+                                <a href="transactions.html" class="dropdown-item active"><i class="fas fa-history"></i> Transaction History</a>
+                                <a href="orders.html" class="dropdown-item"><i class="fas fa-shopping-bag"></i> Order History</a>
+                                <a href="rewards.html" class="dropdown-item"><i class="fas fa-gift"></i> Rewards</a>
+                                <hr class="dropdown-divider">
+                                <a href="#" class="dropdown-item" onclick="logout()"><i class="fas fa-sign-out-alt"></i> Logout</a>
+                            </div>
+                        </div>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <div class="transactions-container">
+        <div class="transactions-header">
+            <h1>Transaction History</h1>
+            <div class="filters">
+                <button class="filter-btn active" data-type="all">All</button>
+                <button class="filter-btn" data-type="return">Returns</button>
+                <button class="filter-btn" data-type="lab">Lab Tests</button>
+                <button class="filter-btn" data-type="redemption">Redemptions</button>
+            </div>
+        </div>
+        <div id="transactionsList" class="transactions-list"></div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>About Genricycle</h3>
+                    <p>Providing affordable generic medications and healthcare services to everyone.</p>
+                </div>
+                <div class="footer-section">
+                    <h3>Quick Links</h3>
+                    <ul>
+                        <li><a href="index.html">Home</a></li>
+                        <li><a href="contact.html">Contact</a></li>
+                        <li><a href="feedback.html">Feedback</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h3>Contact Us</h3>
+                    <p><i class="fas fa-map-marker-alt"></i> 123 Healthcare Ave, Mumbai</p>
+                    <p><i class="fas fa-phone"></i> +91 1234567890</p>
+                    <p><i class="fas fa-envelope"></i> info@genricycle.com</p>
+                </div>
+                <div class="footer-section">
+                    <h3>Follow Us</h3>
+                    <div class="social-icons">
+                        <a href="#"><i class="fab fa-facebook"></i></a>
+                        <a href="#"><i class="fab fa-twitter"></i></a>
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                        <a href="#"><i class="fab fa-linkedin"></i></a>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2023 Genricycle. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>

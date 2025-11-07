@@ -1,0 +1,507 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Settings - Genricycle</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        .settings-container {
+            max-width: 1000px;
+            margin: 30px auto;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .settings-header {
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #eee;
+        }
+        .settings-header h1 {
+            margin: 0;
+            color: #333;
+        }
+        .settings-nav {
+            display: flex;
+            margin-bottom: 30px;
+            border-bottom: 1px solid #eee;
+        }
+        .settings-nav-item {
+            padding: 15px 20px;
+            cursor: pointer;
+            font-weight: 600;
+            color: #666;
+            border-bottom: 3px solid transparent;
+        }
+        .settings-nav-item.active {
+            color: #4CAF50;
+            border-bottom: 3px solid #4CAF50;
+        }
+        .settings-section {
+            margin-bottom: 30px;
+            display: none;
+        }
+        .settings-section.active {
+            display: block;
+        }
+        .settings-section h2 {
+            margin-top: 0;
+            color: #333;
+            border-bottom: 2px solid #4CAF50;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+            color: #555;
+        }
+        .form-control {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+        .btn-save {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        .btn-save:hover {
+            background-color: #45a049;
+        }
+        .toggle-switch {
+            position: relative;
+            display: inline-block;
+            width: 60px;
+            height: 34px;
+        }
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        .toggle-slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 34px;
+        }
+        .toggle-slider:before {
+            position: absolute;
+            content: "";
+            height: 26px;
+            width: 26px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+        input:checked + .toggle-slider {
+            background-color: #4CAF50;
+        }
+        input:checked + .toggle-slider:before {
+            transform: translateX(26px);
+        }
+        .setting-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 0;
+            border-bottom: 1px solid #eee;
+        }
+        .setting-item:last-child {
+            border-bottom: none;
+        }
+        .setting-item-info h3 {
+            margin: 0 0 5px 0;
+            font-size: 18px;
+        }
+        .setting-item-info p {
+            margin: 0;
+            color: #666;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header Section -->
+    <header class="header">
+        <div class="container">
+            <!-- Left side - Logo and Site Name -->
+            <div class="logo-section">
+                <div class="logo">
+                    <img src="Gemini_Generated_Image_l95q43l95q43l95q.png" alt="Genricycle logo" class="logo-img" />
+                    <span class="site-name">Genricycle</span>
+                </div>
+            </div>
+
+            <!-- Right side - Navigation -->
+            <nav class="navigation">
+                <ul class="nav-menu">
+                    <li class="search-section">
+                        <div class="search-container">
+                            <input type="text" placeholder="Search medications..." class="search-input" id="searchInput">
+                            <button class="search-btn" onclick="performSearch()"><i class="fas fa-search"></i></button>
+                        </div>
+                    </li>
+                    <li><a href="contact.html" class="nav-link">Contact Us</a></li>
+                    <li><a href="feedback.html" class="nav-link">Feedback</a></li>
+                    <li>
+                        <a href="#" class="nav-link cart-link" onclick="openCartModal(); return false;" style="font-size: 1.2rem; position: relative;">
+                            <i class="fas fa-shopping-cart"></i>
+                            <span class="cart-count" style="display:none; position:absolute; top:-6px; right:-10px; background:#FF5722; color:#fff; border-radius:50%; font-size:0.7rem; padding:2px 6px; min-width:18px; text-align:center;">0</span>
+                        </a>
+                    </li>
+                    <li class="auth-section">
+                        <!-- Profile dropdown (shown when logged in) -->
+                        <div class="profile-dropdown" id="profileDropdown">
+                            <div class="profile-trigger" onclick="toggleProfileDropdown()">
+                                <div class="profile-avatar">
+                                    <i class="fas fa-user"></i>
+                                </div>
+                                <span class="profile-name" id="profileName">John Doe</span>
+                                <i class="fas fa-chevron-down dropdown-arrow"></i>
+                            </div>
+                            <div class="dropdown-menu" id="dropdownMenu">
+                                <a href="profile.html" class="dropdown-item">
+                                    <i class="fas fa-user"></i>
+                                    My Profile
+                                </a>
+                                <a href="settings.html" class="dropdown-item active">
+                                    <i class="fas fa-cog"></i>
+                                    Settings
+                                </a>
+                                <a href="transactions.html" class="dropdown-item">
+                                    <i class="fas fa-history"></i>
+                                    Transaction History
+                                </a>
+                                <a href="orders.html" class="dropdown-item">
+                                    <i class="fas fa-shopping-bag"></i>
+                                    Order History
+                                </a>
+                                <a href="rewards.html" class="dropdown-item">
+                                    <i class="fas fa-gift"></i>
+                                    Rewards
+                                </a>
+                                <a href="#" class="dropdown-item">
+                                    <i class="fas fa-robot"></i>
+                                    Chatbot
+                                </a>
+                                <hr class="dropdown-divider">
+                                <a href="#" class="dropdown-item" onclick="logout()">
+                                    <i class="fas fa-sign-out-alt"></i>
+                                    Logout
+                                </a>
+                            </div>
+                        </div>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <div class="settings-container">
+        <div class="settings-header">
+            <h1>Account Settings</h1>
+        </div>
+
+        <div class="settings-nav">
+            <div class="settings-nav-item active" data-target="account">Account</div>
+            <div class="settings-nav-item" data-target="security">Security</div>
+            <div class="settings-nav-item" data-target="notifications">Notifications</div>
+            <div class="settings-nav-item" data-target="privacy">Privacy</div>
+            <div class="settings-nav-item" data-target="preferences">Preferences</div>
+        </div>
+
+        <!-- Account Settings Section -->
+        <div id="account" class="settings-section active">
+            <h2>Account Information</h2>
+            <form>
+                <div class="form-group">
+                    <label for="accountEmail">Email Address</label>
+                    <input type="email" id="accountEmail" class="form-control" value="johndoe@example.com">
+                </div>
+                <div class="form-group">
+                    <label for="accountPhone">Phone Number</label>
+                    <input type="tel" id="accountPhone" class="form-control" value="+91 98765 43210">
+                </div>
+                <div class="form-group">
+                    <label for="accountLanguage">Preferred Language</label>
+                    <select id="accountLanguage" class="form-control">
+                        <option value="en" selected>English</option>
+                        <option value="hi">Hindi</option>
+                        <option value="mr">Marathi</option>
+                        <option value="ta">Tamil</option>
+                        <option value="te">Telugu</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="accountCurrency">Preferred Currency</label>
+                    <select id="accountCurrency" class="form-control">
+                        <option value="inr" selected>Indian Rupee (₹)</option>
+                        <option value="usd">US Dollar ($)</option>
+                        <option value="eur">Euro (€)</option>
+                        <option value="gbp">British Pound (£)</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn-save">Save Changes</button>
+            </form>
+        </div>
+
+        <!-- Security Settings Section -->
+        <div id="security" class="settings-section">
+            <h2>Security Settings</h2>
+            <form>
+                <div class="form-group">
+                    <label for="currentPassword">Current Password</label>
+                    <input type="password" id="currentPassword" class="form-control">
+                </div>
+                <div class="form-group">
+                    <label for="newPassword">New Password</label>
+                    <input type="password" id="newPassword" class="form-control">
+                </div>
+                <div class="form-group">
+                    <label for="confirmPassword">Confirm New Password</label>
+                    <input type="password" id="confirmPassword" class="form-control">
+                </div>
+                <div class="setting-item">
+                    <div class="setting-item-info">
+                        <h3>Two-Factor Authentication</h3>
+                        <p>Add an extra layer of security to your account</p>
+                    </div>
+                    <label class="toggle-switch">
+                        <input type="checkbox">
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
+                <div class="setting-item">
+                    <div class="setting-item-info">
+                        <h3>Login Notifications</h3>
+                        <p>Get notified when someone logs into your account</p>
+                    </div>
+                    <label class="toggle-switch">
+                        <input type="checkbox" checked>
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
+                <button type="submit" class="btn-save">Update Security Settings</button>
+            </form>
+        </div>
+
+        <!-- Notifications Settings Section -->
+        <div id="notifications" class="settings-section">
+            <h2>Notification Preferences</h2>
+            <div class="setting-item">
+                <div class="setting-item-info">
+                    <h3>Order Updates</h3>
+                    <p>Receive notifications about your order status</p>
+                </div>
+                <label class="toggle-switch">
+                    <input type="checkbox" checked>
+                    <span class="toggle-slider"></span>
+                </label>
+            </div>
+            <div class="setting-item">
+                <div class="setting-item-info">
+                    <h3>Promotional Emails</h3>
+                    <p>Receive emails about offers and discounts</p>
+                </div>
+                <label class="toggle-switch">
+                    <input type="checkbox" checked>
+                    <span class="toggle-slider"></span>
+                </label>
+            </div>
+            <div class="setting-item">
+                <div class="setting-item-info">
+                    <h3>Prescription Reminders</h3>
+                    <p>Get reminders when your prescriptions need refilling</p>
+                </div>
+                <label class="toggle-switch">
+                    <input type="checkbox" checked>
+                    <span class="toggle-slider"></span>
+                </label>
+            </div>
+            <div class="setting-item">
+                <div class="setting-item-info">
+                    <h3>SMS Notifications</h3>
+                    <p>Receive text messages for important updates</p>
+                </div>
+                <label class="toggle-switch">
+                    <input type="checkbox">
+                    <span class="toggle-slider"></span>
+                </label>
+            </div>
+            <button class="btn-save">Save Notification Settings</button>
+        </div>
+
+        <!-- Privacy Settings Section -->
+        <div id="privacy" class="settings-section">
+            <h2>Privacy Settings</h2>
+            <div class="setting-item">
+                <div class="setting-item-info">
+                    <h3>Profile Visibility</h3>
+                    <p>Control who can see your profile information</p>
+                </div>
+                <select class="form-control" style="width: 150px;">
+                    <option value="public">Public</option>
+                    <option value="private" selected>Private</option>
+                </select>
+            </div>
+            <div class="setting-item">
+                <div class="setting-item-info">
+                    <h3>Data Sharing</h3>
+                    <p>Allow us to share your data with trusted partners</p>
+                </div>
+                <label class="toggle-switch">
+                    <input type="checkbox">
+                    <span class="toggle-slider"></span>
+                </label>
+            </div>
+            <div class="setting-item">
+                <div class="setting-item-info">
+                    <h3>Cookies</h3>
+                    <p>Manage cookie preferences</p>
+                </div>
+                <button class="btn-save" style="width: 150px;">Manage Cookies</button>
+            </div>
+            <button class="btn-save">Save Privacy Settings</button>
+        </div>
+
+        <!-- Preferences Settings Section -->
+        <div id="preferences" class="settings-section">
+            <h2>Site Preferences</h2>
+            <div class="setting-item">
+                <div class="setting-item-info">
+                    <h3>Dark Mode</h3>
+                    <p>Switch between light and dark theme</p>
+                </div>
+                <label class="toggle-switch">
+                    <input type="checkbox">
+                    <span class="toggle-slider"></span>
+                </label>
+            </div>
+            <div class="setting-item">
+                <div class="setting-item-info">
+                    <h3>Default Payment Method</h3>
+                    <p>Choose your preferred payment method</p>
+                </div>
+                <select class="form-control" style="width: 150px;">
+                    <option value="card" selected>Credit Card</option>
+                    <option value="upi">UPI</option>
+                    <option value="netbanking">Net Banking</option>
+                    <option value="cod">Cash on Delivery</option>
+                </select>
+            </div>
+            <div class="setting-item">
+                <div class="setting-item-info">
+                    <h3>Default Shipping Address</h3>
+                    <p>Set your preferred shipping address</p>
+                </div>
+                <select class="form-control" style="width: 150px;">
+                    <option value="home" selected>Home</option>
+                    <option value="work">Work</option>
+                </select>
+            </div>
+            <button class="btn-save">Save Preferences</button>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>About Genricycle</h3>
+                    <p>Providing affordable generic medications and healthcare services to everyone.</p>
+                </div>
+                <div class="footer-section">
+                    <h3>Quick Links</h3>
+                    <ul>
+                        <li><a href="index.html">Home</a></li>
+                        <li><a href="about.html">About Us</a></li>
+                        <li><a href="contact.html">Contact</a></li>
+                        <li><a href="feedback.html">Feedback</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h3>Contact Us</h3>
+                    <p><i class="fas fa-map-marker-alt"></i> 123 Healthcare Ave, Mumbai</p>
+                    <p><i class="fas fa-phone"></i> +91 1234567890</p>
+                    <p><i class="fas fa-envelope"></i> info@genricycle.com</p>
+                </div>
+                <div class="footer-section">
+                    <h3>Follow Us</h3>
+                    <div class="social-icons">
+                        <a href="#"><i class="fab fa-facebook"></i></a>
+                        <a href="#"><i class="fab fa-twitter"></i></a>
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                        <a href="#"><i class="fab fa-linkedin"></i></a>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2023 Genricycle. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+    <script>
+        // Settings page specific JavaScript
+        document.addEventListener('DOMContentLoaded', function() {
+            // Tab navigation
+            const navItems = document.querySelectorAll('.settings-nav-item');
+            const sections = document.querySelectorAll('.settings-section');
+            
+            navItems.forEach(item => {
+                item.addEventListener('click', function() {
+                    // Remove active class from all nav items
+                    navItems.forEach(nav => nav.classList.remove('active'));
+                    // Add active class to clicked nav item
+                    this.classList.add('active');
+                    
+                    // Hide all sections
+                    sections.forEach(section => section.classList.remove('active'));
+                    // Show the target section
+                    const targetSection = document.getElementById(this.dataset.target);
+                    targetSection.classList.add('active');
+                });
+            });
+            
+            // Load user settings data
+            const userData = JSON.parse(localStorage.getItem('userData')) || {
+                email: 'johndoe@example.com',
+                phone: '+91 98765 43210',
+                language: 'en',
+                currency: 'inr'
+            };
+            
+            // Populate form fields
+            document.getElementById('accountEmail').value = userData.email;
+            document.getElementById('accountPhone').value = userData.phone;
+            document.getElementById('accountLanguage').value = userData.language;
+            document.getElementById('accountCurrency').value = userData.currency;
+        });
+    </script>
+</body>
+</html>

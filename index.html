@@ -1,0 +1,497 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Genricycle - Your Health Companion</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <!-- Header Section -->
+    <header class="header">
+        <div class="container">
+            <!-- Left side - Logo and Site Name -->
+            <div class="logo-section">
+                <div class="logo">
+                    <img src="Gemini_Generated_Image_l95q43l95q43l95q.png" alt="Genricycle logo" class="logo-img" />
+                    <span class="site-name">Genricycle</span>
+                </div>
+            </div>
+
+            <!-- Right side - Navigation -->
+            <nav class="navigation">
+                <ul class="nav-menu">
+                    <li class="search-section">
+                        <div class="search-container">
+                            <input type="text" placeholder="Search medications..." class="search-input" id="searchInput">
+                            <button class="search-btn" onclick="performSearch()"><i class="fas fa-search"></i></button>
+                        </div>
+                        
+                    </li>
+                    <li><a href="contact.html" class="nav-link">Contact Us</a></li>
+                    <li><a href="feedback.html" class="nav-link">Feedback</a></li>
+                    <li>
+                        <a href="#" class="nav-link cart-link" onclick="openCartModal(); return false;" style="font-size: 1.2rem; position: relative;">
+                            <i class="fas fa-shopping-cart"></i>
+                            <span class="cart-count" style="display:none; position:absolute; top:-6px; right:-10px; background:#FF5722; color:#fff; border-radius:50%; font-size:0.7rem; padding:2px 6px; min-width:18px; text-align:center;">0</span>
+                        </a>
+                    </li>
+                    <li class="auth-section">
+                        <!-- Login/Signup buttons (shown when not logged in) -->
+                        <div class="auth-buttons" id="authButtons">
+                            <button class="btn btn-primary" onclick="showLoginModal()">Login / Sign Up</button>
+                        </div>
+                        
+                        <!-- Profile dropdown (shown when logged in) -->
+                        <div class="profile-dropdown" id="profileDropdown" style="display: none;">
+                            <div class="profile-trigger" onclick="toggleProfileDropdown()">
+                                <div class="profile-avatar">
+                                    <i class="fas fa-user"></i>
+                                </div>
+                                <span class="profile-name" id="profileName">John Doe</span>
+                                <i class="fas fa-chevron-down dropdown-arrow"></i>
+                            </div>
+                            <div class="dropdown-menu" id="dropdownMenu">
+                                <a href="profile.html" class="dropdown-item">
+                                    <i class="fas fa-user"></i>
+                                    My Profile
+                                </a>
+                                <a href="settings.html" class="dropdown-item">
+                                    <i class="fas fa-cog"></i>
+                                    Settings
+                                </a>
+                                <a href="transactions.html" class="dropdown-item">
+                                    <i class="fas fa-history"></i>
+                                    Transaction History
+                                </a>
+                                <a href="orders.html" class="dropdown-item">
+                                    <i class="fas fa-shopping-bag"></i>
+                                    Order History
+                                </a>
+                                <a href="rewards.html" class="dropdown-item">
+                                    <i class="fas fa-gift"></i>
+                                    Rewards
+                                </a>
+                                <a href="#" class="dropdown-item">
+                                    <i class="fas fa-robot"></i>
+                                    Chatbot
+                                </a>
+                                <hr class="dropdown-divider">
+                                <a href="#" class="dropdown-item" onclick="logout()">
+                                    <i class="fas fa-sign-out-alt"></i>
+                                    Logout
+                                </a>
+                            </div>
+                        </div>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Category Bar -->
+<div class="category-bar">
+    <div class="container">
+        <nav class="category-nav">
+            <a href="#generic-medicines" class="category-link"><i class="fas fa-capsules"></i> Generic Medicines</a>
+            <a href="consult-doctors.html" class="category-link"><i class="fas fa-user-md"></i> Consult Doctors</a>
+            <a href="lab-tests.html" class="category-link"><i class="fas fa-vials"></i> Lab tests</a>
+            <a href="medicine-return.html" class="category-link"><i class="fas fa-recycle"></i> Return Medicines</a>
+            <a href="donations.html" class="category-link"><i class="fas fa-hand-holding-heart"></i> Donations</a>
+            <a href="partnerships.html" class="category-link"><i class="fas fa-handshake"></i> Partnerships</a>
+            <a href="donations.html" class="category-link"><i class="fas fa-hands-helping"></i> Donation</a>
+        </nav>
+    </div>
+</div>
+
+<!-- Interface Links -->
+<div class="interface-links" style="background-color: #f0f0f0; padding: 15px; margin: 20px 0; border-radius: 8px; text-align: center;">
+    <div class="container">
+        <h3 style="margin-bottom: 10px;">Access Specialized Interfaces</h3>
+        <div style="display: flex; justify-content: center; gap: 20px; flex-wrap: wrap;">
+            <a href="hospital-lab-interface.html" style="display: inline-block; padding: 10px 20px; background-color: #1565C0; color: white; text-decoration: none; border-radius: 5px;">
+                <i class="fas fa-hospital"></i> Hospital/Lab Portal
+            </a>
+            <a href="doctor-interface.html" style="display: inline-block; padding: 10px 20px; background-color: #673AB7; color: white; text-decoration: none; border-radius: 5px;">
+                <i class="fas fa-user-md"></i> Doctor Portal
+            </a>
+            <a href="delivery-partner-interface.html" style="display: inline-block; padding: 10px 20px; background-color: #FF5722; color: white; text-decoration: none; border-radius: 5px;">
+                <i class="fas fa-truck"></i> Delivery Partner Portal
+            </a>
+        </div>
+    </div>
+</div>
+
+    <!-- Scrolling News/Updates Bar -->
+    <div class="news-bar">
+        <div class="news-content">
+            <span class="news-label">Latest Updates:</span>
+            <div class="scrolling-text">
+                <span>🆕 New generic medications added to our catalog</span>
+                <span>💊 Free shipping on orders above ₹500</span>
+                <span>🔄 Eco-friendly packaging now available</span>
+                <span>⭐ Rate your medications and earn rewards</span>
+                <span>🤖 AI chatbot now available for instant support</span>
+                <span>📱 Download our mobile app for better experience</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content Area -->
+    <main class="main-content">
+        <div class="container">
+            <div class="welcome-section">
+                <h1>Welcome to Genricycle</h1>
+                <p>Manage your medications, track your health, and stay on top of your wellness journey with eco-friendly solutions.</p>
+            </div>
+
+            <!-- Products Section -->
+            <section class="products-section" id="generic-medicines">
+                <h2 class="section-title">Featured Medications</h2>
+                <div class="search-results-info" id="searchResultsInfo" style="display: none;">
+                    <span id="resultsCount">0 results found</span>
+                    <div class="results-actions">
+                        <button class="btn" id="toggleFiltersBtn" onclick="toggleFiltersSidebar()">Filters</button>
+                        <button class="clear-filters-btn" onclick="clearFilters()">Clear Filters</button>
+                    </div>
+                </div>
+                <div class="products-layout">
+                    <aside class="filters-sidebar" id="filtersSidebar" style="display: none;">
+                        <h3 class="filters-title">Filter Results</h3>
+                        <div class="filters-group">
+                            <label for="priceFilter">Sort by Price</label>
+                            <select class="filter-select" id="priceFilter" onchange="applyFilters()">
+                                <option value="">None</option>
+                                <option value="low-high">Low to High</option>
+                                <option value="high-low">High to Low</option>
+                            </select>
+                        </div>
+                        <div class="filters-group">
+                            <label for="ratingFilter">Sort by Rating</label>
+                            <select class="filter-select" id="ratingFilter" onchange="applyFilters()">
+                                <option value="">All Ratings</option>
+                                <option value="high-rating">High Rating (4.5+)</option>
+                            </select>
+                        </div>
+                        <div class="filters-group">
+                            <label for="offerSort">Sort by Offers</label>
+                            <select class="filter-select" id="offerSort" onchange="applyFilters()">
+                                <option value="">None</option>
+                                <option value="best-offers">Best Offers First</option>
+                            </select>
+                        </div>
+                        <div class="filters-group">
+                            <label for="brandFilter">Brand</label>
+                            <select class="filter-select" id="brandFilter" onchange="applyFilters()">
+                                <option value="">All Brands</option>
+                            </select>
+                        </div>
+                    </aside>
+                    <div class="products-grid" id="productsGrid">
+                    <!-- Chestal Cold & Cough Relief -->
+                    <div class="product-card">
+                        <div class="product-image">
+                            <img src="https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=200&h=200&fit=crop&crop=center" alt="Chestal Cold & Cough Relief">
+                            <div class="product-badge">Homeopathic</div>
+                        </div>
+                        <div class="product-info">
+                            <h3 class="product-name">Chestal Cold & Cough Relief</h3>
+                            <p class="product-description">Homeopathic medicine for nasal & chest congestion, runny nose, and cough relief. Non-drowsy and dye-free.</p>
+                            <div class="product-rating">
+                                <div class="stars">
+                                    <span class="star filled">★</span>
+                                    <span class="star filled">★</span>
+                                    <span class="star filled">★</span>
+                                    <span class="star filled">★</span>
+                                    <span class="star">★</span>
+                                </div>
+                                <span class="rating-text">4.2 (128 reviews)</span>
+                            </div>
+                            <div class="product-price">
+                                <span class="current-price">₹299</span>
+                                <span class="original-price">₹399</span>
+                                <span class="discount">25% OFF</span>
+                            </div>
+                            <div class="product-quantity">
+                                <input type="number" min="1" value="1" class="quantity-input" id="quantity-chestal">
+                                <button class="btn btn-primary add-to-cart" onclick="addToCart('chestal', 'Chestal Cold & Cough Relief', 299, document.getElementById('quantity-chestal').value)">
+                                    <i class="fas fa-shopping-cart"></i> Add to Cart
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Paracetamol 500mg -->
+                    <div class="product-card">
+                        <div class="product-image">
+                            <img src="https://images.unsplash.com/photo-1559757148-5c350d0d3c56?w=200&h=200&fit=crop&crop=center" alt="Paracetamol 500mg Tablets">
+                            <div class="product-badge">Pain Relief</div>
+                        </div>
+                        <div class="product-info">
+                            <h3 class="product-name">Paracetamol 500mg Tablets</h3>
+                            <p class="product-description">Effective pain relief and fever reducer. Bell's Healthcare quality tablets for adults and children.</p>
+                            <div class="product-rating">
+                                <div class="stars">
+                                    <span class="star filled">★</span>
+                                    <span class="star filled">★</span>
+                                    <span class="star filled">★</span>
+                                    <span class="star filled">★</span>
+                                    <span class="star filled">★</span>
+                                </div>
+                                <span class="rating-text">4.8 (256 reviews)</span>
+                            </div>
+                            <div class="product-price">
+                                <span class="current-price">₹45</span>
+                                <span class="original-price">₹60</span>
+                                <span class="discount">25% OFF</span>
+                            </div>
+                            <div class="product-quantity">
+                                <input type="number" min="1" value="1" class="quantity-input" id="quantity-paracetamol">
+                                <button class="btn btn-primary add-to-cart" onclick="addToCart('paracetamol', 'Paracetamol 500mg Tablets', 45, document.getElementById('quantity-paracetamol').value)">
+                                    <i class="fas fa-shopping-cart"></i> Add to Cart
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Ciplactin -->
+                    <div class="product-card">
+                        <div class="product-image">
+                            <img src="https://images.unsplash.com/photo-1587854692152-cbe660dbde88?w=200&h=200&fit=crop&crop=center" alt="Ciplactin Tablets">
+                            <div class="product-badge">Antihistamine</div>
+                        </div>
+                        <div class="product-info">
+                            <h3 class="product-name">Ciplactin (Cyproheptadine)</h3>
+                            <p class="product-description">Antihistamine tablets for allergy relief, appetite stimulation, and motion sickness. Trusted Cipla quality.</p>
+                            <div class="product-rating">
+                                <div class="stars">
+                                    <span class="star filled">★</span>
+                                    <span class="star filled">★</span>
+                                    <span class="star filled">★</span>
+                                    <span class="star filled">★</span>
+                                    <span class="star">★</span>
+                                </div>
+                                <span class="rating-text">4.1 (89 reviews)</span>
+                            </div>
+                            <div class="product-price">
+                                <span class="current-price">₹85</span>
+                                <span class="original-price">₹120</span>
+                                <span class="discount">29% OFF</span>
+                            </div>
+                            <div class="product-quantity">
+                                <input type="number" min="1" value="1" class="quantity-input" id="quantity-ciplactin">
+                                <button class="btn btn-primary add-to-cart" onclick="addToCart('ciplactin', 'Ciplactin (Cyproheptadine)', 85, document.getElementById('quantity-ciplactin').value)">
+                                    <i class="fas fa-shopping-cart"></i> Add to Cart
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Generic Semglee Insulin -->
+                    <div class="product-card">
+                        <div class="product-image">
+                            <img src="https://images.unsplash.com/photo-1576671081837-49000212a370?w=200&h=200&fit=crop&crop=center" alt="Generic Semglee Insulin">
+                            <div class="product-badge">Prescription</div>
+                        </div>
+                        <div class="product-info">
+                            <h3 class="product-name">Generic Semglee Insulin Glargine</h3>
+                            <p class="product-description">Long-acting insulin injection for diabetes management. 100 units/mL concentration for subcutaneous use.</p>
+                            <div class="product-rating">
+                                <div class="stars">
+                                    <span class="star filled">★</span>
+                                    <span class="star filled">★</span>
+                                    <span class="star filled">★</span>
+                                    <span class="star filled">★</span>
+                                    <span class="star filled">★</span>
+                                </div>
+                                <span class="rating-text">4.6 (342 reviews)</span>
+                            </div>
+                            <div class="product-price">
+                                <span class="current-price">₹1,250</span>
+                                <span class="original-price">₹1,800</span>
+                                <span class="discount">31% OFF</span>
+                            </div>
+                            <div class="product-quantity">
+                                <input type="number" min="1" value="1" class="quantity-input" id="quantity-insulin">
+                                <button class="btn btn-primary add-to-cart" onclick="addToCart('insulin', 'Generic Semglee Insulin Glargine', 1250, document.getElementById('quantity-insulin').value)">
+                                    <i class="fas fa-shopping-cart"></i> Add to Cart
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Betadine Ointment -->
+                    <div class="product-card">
+                        <div class="product-image">
+                            <img src="https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?w=200&h=200&fit=crop&crop=center" alt="Betadine Povidone-Iodine Ointment">
+                            <div class="product-badge">Antiseptic</div>
+                        </div>
+                        <div class="product-info">
+                            <h3 class="product-name">Betadine Povidone-Iodine Ointment</h3>
+                            <p class="product-description">10% w/w antiseptic ointment for wound care and skin disinfection. Effective against bacteria, fungi, and viruses.</p>
+                            <div class="product-rating">
+                                <div class="stars">
+                                    <span class="star filled">★</span>
+                                    <span class="star filled">★</span>
+                                    <span class="star filled">★</span>
+                                    <span class="star filled">★</span>
+                                    <span class="star">★</span>
+                                </div>
+                                <span class="rating-text">4.3 (167 reviews)</span>
+                            </div>
+                            <div class="product-price">
+                                <span class="current-price">₹180</span>
+                                <span class="original-price">₹250</span>
+                                <span class="discount">28% OFF</span>
+                            </div>
+                            <div class="product-quantity">
+                                <input type="number" min="1" value="1" class="quantity-input" id="quantity-betadine">
+                                <button class="btn btn-primary add-to-cart" onclick="addToCart('betadine', 'Betadine Povidone-Iodine Ointment', 180, document.getElementById('quantity-betadine').value)">
+                                    <i class="fas fa-shopping-cart"></i> Add to Cart
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <!-- Login Modal -->
+    <div class="modal" id="loginModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Login to Genricycle</h2>
+                <button class="close-btn" onclick="closeModal('loginModal')">&times;</button>
+            </div>
+            <form class="modal-body">
+                <div class="form-group">
+                    <label for="loginEmail">Email</label>
+                    <input type="email" id="loginEmail" required>
+                </div>
+                <div class="form-group">
+                    <label for="loginPassword">Password</label>
+                    <input type="password" id="loginPassword" required>
+                </div>
+                <button type="submit" class="btn btn-primary btn-full">Login</button>
+                <div class="auth-links">
+                    <a href="#" onclick="showForgotModal(); return false;">Forgot password?</a>
+                    <span class="divider">•</span>
+                    <a href="#" onclick="showSignupModal(); return false;">New to Genricycle? Sign up</a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Signup Modal -->
+    <div class="modal" id="signupModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Create Account</h2>
+                <button class="close-btn" onclick="closeModal('signupModal')">&times;</button>
+            </div>
+            <form class="modal-body">
+                <div class="form-group">
+                    <label for="signupName">Full Name</label>
+                    <input type="text" id="signupName" required>
+                </div>
+                <div class="form-group">
+                    <label for="signupEmail">Email</label>
+                    <input type="email" id="signupEmail" required>
+                </div>
+                <div class="form-group">
+                    <label for="signupPassword">Password</label>
+                    <input type="password" id="signupPassword" required>
+                </div>
+                <div class="form-group">
+                    <label for="signupRole">Account Type</label>
+                    <select id="signupRole" required>
+                        <option value="user" selected>User</option>
+                        <option value="hospital">Hospital</option>
+                        <option value="lab">Lab</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn btn-primary btn-full">Create Account</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Forgot Password Modal -->
+    <div class="modal" id="forgotModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Reset your password</h2>
+                <button class="close-btn" onclick="closeModal('forgotModal')">&times;</button>
+            </div>
+            <form class="modal-body">
+                <div class="form-group">
+                    <label for="forgotEmail">Email</label>
+                    <input type="email" id="forgotEmail" required>
+                </div>
+                <button type="submit" class="btn btn-primary btn-full">Send reset link</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Cart Modal -->
+    <div class="modal" id="cartModal">
+        <div class="modal-content cart-modal">
+            <div class="modal-header">
+                <h2>Your Cart</h2>
+                <button class="close-btn" onclick="closeModal('cartModal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="cart-steps">
+                    <button class="step-tab active" data-step="cart">Cart</button>
+                    <button class="step-tab" data-step="payment">Payment</button>
+                    <button class="step-tab" data-step="delivery">Delivery</button>
+                </div>
+
+                <!-- Step: Cart Items -->
+                <div id="cartStep" class="step-content active">
+                    <div id="cartItems"></div>
+                    <div class="cart-total">
+                        <strong>Total:</strong> ₹<span id="cartTotal">0</span>
+                    </div>
+                    <div class="step-actions">
+                        <button class="btn btn-primary" onclick="proceedToPayment()">Proceed to Payment</button>
+                    </div>
+                </div>
+
+                <!-- Step: Payment -->
+                <div id="paymentStep" class="step-content" style="display:none;">
+                    <div class="payment-options">
+                        <label class="payment-option">
+                            <input type="radio" name="paymentMethod" value="upi"> UPI
+                        </label>
+                        <label class="payment-option">
+                            <input type="radio" name="paymentMethod" value="card"> Card
+                        </label>
+                        <label class="payment-option">
+                            <input type="radio" name="paymentMethod" value="cash"> Cash on Delivery
+                        </label>
+                    </div>
+                    <div class="step-actions">
+                        <button class="btn btn-primary" onclick="confirmPayment()">Confirm Payment</button>
+                    </div>
+                </div>
+
+                <!-- Step: Delivery Details -->
+                <div id="deliveryStep" class="step-content" style="display:none;">
+                    <div class="delivery-details">
+                        <div id="deliveryEta" class="eta-info">Estimated delivery: -- mins</div>
+                        <div id="deliveryMap" class="map-placeholder">Map will be displayed here</div>
+                    </div>
+                    <div class="step-actions">
+                        <button class="btn btn-primary" onclick="showDeliveryDetails()">Show Delivery Details</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

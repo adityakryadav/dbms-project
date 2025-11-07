@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Doctor Profile - Genricycle</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background: #f8f9fa;
+        }
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .back-link {
+            display: inline-block;
+            margin-bottom: 20px;
+            color: #2E7D32;
+            text-decoration: none;
+            font-weight: bold;
+        }
+        .profile-card {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        .profile-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .profile-img {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            margin-right: 20px;
+            object-fit: cover;
+        }
+        .profile-info h1 {
+            margin: 0 0 10px 0;
+            color: #333;
+        }
+        .profile-info p {
+            margin: 5px 0;
+            color: #666;
+        }
+        .rating {
+            color: #FF9800;
+            font-weight: bold;
+        }
+        .tabs {
+            display: flex;
+            border-bottom: 1px solid #ddd;
+            margin-bottom: 20px;
+        }
+        .tab {
+            padding: 10px 20px;
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+        }
+        .tab.active {
+            border-bottom-color: #2E7D32;
+            color: #2E7D32;
+            font-weight: bold;
+        }
+        .tab-content {
+            display: none;
+        }
+        .tab-content.active {
+            display: block;
+        }
+        .book-btn {
+            background: #2E7D32;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 4px;
+            font-weight: bold;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 20px;
+        }
+        .time-slot {
+            display: inline-block;
+            padding: 8px 12px;
+            margin: 5px;
+            background: #e8f5e9;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .time-slot.selected {
+            background: #2E7D32;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="consult-doctors.html" class="back-link">← Back to Doctors</a>
+        
+        <div class="profile-card">
+            <div class="profile-header">
+                <img id="doctor-image" src="https://randomuser.me/api/portraits/men/32.jpg" alt="Doctor" class="profile-img">
+                <div class="profile-info">
+                    <h1 id="doctor-name">Dr. Name</h1>
+                    <p id="doctor-specialty">Specialty</p>
+                    <p class="rating">★ <span id="doctor-rating">4.8</span> (<span id="doctor-reviews">150+</span> consultations)</p>
+                    <p id="doctor-bio">Loading doctor information...</p>
+                </div>
+            </div>
+            
+            <div class="tabs">
+                <div class="tab active" data-tab="qualifications">Qualifications</div>
+                <div class="tab" data-tab="experience">Experience</div>
+                <div class="tab" data-tab="reviews">Reviews</div>
+                <div class="tab" data-tab="availability">Availability</div>
+            </div>
+            
+            <div id="qualifications" class="tab-content active">
+                <h3>Education</h3>
+                <p>MBBS - All India Institute of Medical Sciences (AIIMS), New Delhi</p>
+                <p>MD - Post Graduate Institute of Medical Education and Research (PGIMER), Chandigarh</p>
+                
+                <h3>Certifications</h3>
+                <p>• Medical Council of India (MCI) Registered</p>
+                <p>• Advanced Cardiac Life Support (ACLS)</p>
+                <p>• Basic Life Support (BLS)</p>
+            </div>
+            
+            <div id="experience" class="tab-content">
+                <h3>Work Experience</h3>
+                <p><strong>Senior Consultant</strong> - Apollo Hospitals, Delhi (2021 - Present)</p>
+                <p><strong>Consultant</strong> - Max Healthcare, Gurgaon (2019 - 2021)</p>
+                
+                <h3>Specializations</h3>
+                <p>• Chronic disease management</p>
+                <p>• Preventive healthcare</p>
+                <p>• Holistic treatment approaches</p>
+            </div>
+            
+            <div id="reviews" class="tab-content">
+                <div style="margin-bottom: 20px; padding-bottom: 20px; border-bottom: 1px solid #eee;">
+                    <p><strong>Rahul Sharma</strong> <span style="float: right; color: #999;">2 weeks ago</span></p>
+                    <p class="rating">★★★★★</p>
+                    <p>Excellent doctor! Very patient and thorough with the diagnosis. Explained everything clearly.</p>
+                </div>
+                
+                <div style="margin-bottom: 20px; padding-bottom: 20px; border-bottom: 1px solid #eee;">
+                    <p><strong>Anita Patel</strong> <span style="float: right; color: #999;">1 month ago</span></p>
+                    <p class="rating">★★★★☆</p>
+                    <p>Very knowledgeable and professional. The consultation was smooth and the treatment worked well.</p>
+                </div>
+                
+                <div>
+                    <p><strong>Mohit Kumar</strong> <span style="float: right; color: #999;">2 months ago</span></p>
+                    <p class="rating">★★★★☆</p>
+                    <p>Good experience overall. The doctor was attentive and provided clear instructions.</p>
+                </div>
+            </div>
+            
+            <div id="availability" class="tab-content">
+                <h3>Available Time Slots</h3>
+                <p>Select a time slot to book your consultation:</p>
+                
+                <div id="time-slots">
+                    <div class="time-slot">Mon 9:00 AM</div>
+                    <div class="time-slot">Mon 2:00 PM</div>
+                    <div class="time-slot">Tue 11:00 AM</div>
+                    <div class="time-slot">Tue 4:00 PM</div>
+                    <div class="time-slot">Wed 9:00 AM</div>
+                    <div class="time-slot">Wed 2:00 PM</div>
+                    <div class="time-slot">Thu 11:00 AM</div>
+                    <div class="time-slot">Thu 4:00 PM</div>
+                    <div class="time-slot">Fri 9:00 AM</div>
+                    <div class="time-slot">Fri 2:00 PM</div>
+                </div>
+                
+                <button id="book-btn" class="book-btn">Book Consultation (₹199)</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Get doctor name from URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const doctorName = urlParams.get('doctor');
+        
+        // Doctor data
+        const doctorData = {
+            "Dr. Aisha Khan": {
+                specialty: "Dermatology • 8 years experience",
+                rating: "4.8",
+                reviews: "120+",
+                bio: "Specializes in skin conditions, allergies, and cosmetic dermatology with extensive experience treating acne, eczema, and psoriasis.",
+                image: "https://randomuser.me/api/portraits/women/65.jpg"
+            },
+            "Dr. Ravi Verma": {
+                specialty: "General Medicine • 12 years experience",
+                rating: "4.9",
+                reviews: "200+",
+                bio: "Expert in chronic disease management and preventive healthcare, focusing on holistic treatment approaches.",
+                image: "https://randomuser.me/api/portraits/men/32.jpg"
+            },
+            "Dr. Neha Patel": {
+                specialty: "Pediatrics • 6 years experience",
+                rating: "4.7",
+                reviews: "90+",
+                bio: "Specializes in child development, nutrition, and adolescent health with a gentle approach to treating children.",
+                image: "https://randomuser.me/api/portraits/women/33.jpg"
+            }
+        };
+        
+        // Load doctor data
+        if (doctorName && doctorData[doctorName]) {
+            document.getElementById('doctor-name').textContent = doctorName;
+            document.getElementById('doctor-specialty').textContent = doctorData[doctorName].specialty;
+            document.getElementById('doctor-rating').textContent = doctorData[doctorName].rating;
+            document.getElementById('doctor-reviews').textContent = doctorData[doctorName].reviews;
+            document.getElementById('doctor-bio').textContent = doctorData[doctorName].bio;
+            document.getElementById('doctor-image').src = doctorData[doctorName].image;
+            document.title = doctorName + " - Genricycle";
+        }
+        
+        // Tab navigation
+        document.querySelectorAll('.tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                // Remove active class from all tabs and content
+                document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+                document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+                
+                // Add active class to clicked tab and corresponding content
+                tab.classList.add('active');
+                const tabId = tab.getAttribute('data-tab');
+                document.getElementById(tabId).classList.add('active');
+            });
+        });
+        
+        // Time slot selection
+        document.querySelectorAll('.time-slot').forEach(slot => {
+            slot.addEventListener('click', () => {
+                document.querySelectorAll('.time-slot').forEach(s => s.classList.remove('selected'));
+                slot.classList.add('selected');
+            });
+        });
+        
+        // Booking functionality
+        document.getElementById('book-btn').addEventListener('click', () => {
+            const selectedSlot = document.querySelector('.time-slot.selected');
+            const slotText = selectedSlot ? selectedSlot.textContent : 'a convenient time';
+            
+            if (confirm(`Proceed to pay ₹199 for consultation with ${doctorName} at ${slotText}?`)) {
+                // Simulate payment success
+                localStorage.setItem('paidDoctorName', doctorName);
+                alert('Payment successful! Your appointment has been confirmed.');
+            }
+        });
+    </script>
+</body>
+</html>

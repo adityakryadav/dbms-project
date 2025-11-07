@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Recycle - Genricycle</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        .page-wrapper { max-width: 1000px; margin: 0 auto; padding: 2rem 20px; }
+        .simple-card { background: #fff; border: 1px solid rgba(46,125,50,0.12); border-radius: 12px; padding: 1.5rem; box-shadow: 0 4px 12px rgba(0,0,0,0.06); }
+        .back-link { display: inline-flex; align-items: center; gap: .5rem; text-decoration: none; color: #2E7D32; font-weight: 600; margin-bottom: 1rem; }
+    </style>
+</head>
+<body>
+    <!-- Home Link -->
+    <div style="background: #2E7D32; padding: 1rem; text-align: center;">
+        <a href="index.html" style="color: white; text-decoration: none; font-weight: bold;">
+            <i class="fas fa-home"></i> Back to Home
+        </a>
+    </div>
+    
+    <section class="recycle-hero">
+        <div class="container">
+            <h1>Hospital & Lab Recycling</h1>
+            <p>Secure, compliant and scheduled pickups for biomedical disposables. Join us to keep healthcare safer and greener.</p>
+        </div>
+    </section>
+
+    <div class="page-wrapper">
+        <a class="back-link" href="index.html"><i class="fas fa-arrow-left"></i> Back to Home</a>
+        
+        <div class="simple-card" style="margin-top:.5rem;">
+            <p><b>Medical waste requires responsible disposal.</b> Partner hospitals and labs can schedule pickups to ensure safe, compliant recycling that protects people and the environment.</p>
+        </div>
+
+        <section class="recycle-features simple-card" style="margin-top:1rem;">
+            <div class="rf-grid">
+                <div class="rf-item"><i class="fas fa-shield-halved"></i><h3>Compliance</h3><p>Chain‑of‑custody and documentation as per local rules.</p></div>
+                <div class="rf-item"><i class="fas fa-truck"></i><h3>Scheduled Pickup</h3><p>Routes optimized for your facility’s timing.</p></div>
+                <div class="rf-item"><i class="fas fa-file-circle-check"></i><h3>Digital Proof</h3><p>Certificates and reports accessible online.</p></div>
+                <div class="rf-item"><i class="fas fa-coins"></i><h3>Rewards</h3><p>Earn points for responsible recycling.</p></div>
+            </div>
+        </section>
+
+        <!-- Gallery (no heading) -->
+        <div class="recycle-gallery simple-card" style="margin-top:1rem;">
+            <div class="rg-grid">
+                <img src="OIP (3).webp" alt="Mixed medical disposables" loading="lazy">
+                <img src="download (1).webp" alt="Vials and disposables" loading="lazy">
+                <img src="download (2).webp" alt="Plastic medical waste" loading="lazy">
+            </div>
+        </div>
+
+        <!-- Access gate for hospitals/labs only -->
+        <div id="recycleGate" class="simple-card" style="margin-top:1rem; display:none;">
+            <p>This service is available to registered hospitals and diagnostic labs. Please sign up or log in with a Hospital/Lab account.</p>
+            <a class="btn btn-primary" href="index.html">Login / Sign Up</a>
+        </div>
+
+        <!-- Authorized content -->
+        <div id="recycleContent" style="display:none;">
+            <div class="simple-card" style="margin-top:1rem;">
+            <p>Hospitals/Labs can sell their waste items to us using the form below.</p>
+            <form id="recycleForm" onsubmit="return submitRecycle(event)">
+                    <div class="form-group"><label>Facility name</label><input id="rname" required></div>
+                    <div class="form-group"><label>Contact phone</label><input id="rphone" type="tel" required></div>
+                    <div class="form-group"><label>Address</label><input id="raddr" required></div>
+                    <div class="form-group"><label>City</label><input id="rcity" required></div>
+                    <div class="form-group"><label>Pincode</label><input id="rpin" required></div>
+                    <div class="form-group"><label>Pickup date</label><input id="rdate" type="date" required></div>
+                    <div class="form-group"><label>Preferred time</label><input id="rtime" type="time" required></div>
+                    <div class="form-group"><label>Waste category & quantity</label><textarea id="ritems" required placeholder="e.g., Sharps 5kg, Plastics 3kg"></textarea></div>
+                    <button class="btn btn-primary" type="submit">Submit request</button>
+                </form>
+            </div>
+
+            <div class="simple-card" style="margin-top:1rem;">
+                <p>Impact calculator (estimates reward points):</p>
+                <div class="form-group"><label>Number of items</label><input id="rcount" type="number" min="1" value="1"></div>
+                <button class="btn" onclick="calcImpact()">Calculate</button>
+                <p id="impactResult" style="margin-top:.5rem;"></p>
+            </div>
+
+            <section class="lab-faq" style="margin-top:1rem;">
+                <h2>Frequently Asked Questions</h2>
+                <div class="accordion">
+                    <div class="accordion-item">
+                        <button class="accordion-header">Who can use this service?</button>
+                        <div class="accordion-panel"><p>Only verified hospitals and diagnostic labs with Hospital/Lab account type.</p></div>
+                    </div>
+                    <div class="accordion-item">
+                        <button class="accordion-header">What waste categories do you accept?</button>
+                        <div class="accordion-panel"><p>Sharps, plastics, glass, paper/cardboard, and other non‑hazardous segregated waste as per local rules.</p></div>
+                    </div>
+                    <div class="accordion-item">
+                        <button class="accordion-header">Do we get certificates of disposal?</button>
+                        <div class="accordion-panel"><p>Yes, digital records and certificates are provided after processing.</p></div>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </div>
+    
+    <!-- FAQ Section for all users -->
+    <section class="faq-section simple-card" style="margin-top: 2rem;">
+        <h2>Frequently Asked Questions</h2>
+        <div class="accordion">
+            <div class="accordion-item">
+                <button class="accordion-header">What types of medical waste can be recycled?</button>
+                <div class="accordion-panel"><p>We accept non-hazardous medical waste including plastic containers, glass vials, cardboard packaging, and certain types of sharps in approved containers. Hazardous waste, infectious materials, and chemotherapy waste require special handling and may not be eligible.</p></div>
+            </div>
+            <div class="accordion-item">
+                <button class="accordion-header">How is the medical waste recycled?</button>
+                <div class="accordion-panel"><p>Our process involves collection, sorting, sterilization (when required), and processing into recyclable materials. Different materials follow different recycling paths - plastics are processed into pellets, glass is crushed for reuse, and paper/cardboard is pulped for recycling.</p></div>
+            </div>
+            <div class="accordion-item">
+                <button class="accordion-header">Is there a cost for recycling services?</button>
+                <div class="accordion-panel"><p>For registered hospitals and labs, basic recycling services are provided at minimal cost, with potential for earning rewards points. Pricing depends on volume, frequency, and waste type. Contact us for a customized quote.</p></div>
+            </div>
+            <div class="accordion-item">
+                <button class="accordion-header">How do I prepare waste for pickup?</button>
+                <div class="accordion-panel"><p>All waste must be properly segregated, contained in appropriate containers, and labeled according to waste type. Our team provides training and guidelines for proper preparation. Improperly prepared waste may be rejected at pickup.</p></div>
+            </div>
+            <div class="accordion-item">
+                <button class="accordion-header">How often can I schedule pickups?</button>
+                <div class="accordion-panel"><p>Pickup frequency depends on your facility's needs and waste volume. Options range from daily to monthly scheduled pickups, with emergency pickups available when needed. Regular schedules help optimize our routes and reduce carbon emissions.</p></div>
+            </div>
+        </div>
+    </section>
+    
+    <script>
+    function isAuthorizedHospitalLab(){
+        try {
+            const u = JSON.parse(localStorage.getItem('genricycle_user')||'null');
+            return !!(u && (u.role === 'hospital' || u.role === 'lab'));
+        } catch(e){ return false; }
+    }
+    (function initRecycle(){
+        const allowed = isAuthorizedHospitalLab();
+        document.getElementById('recycleContent').style.display = allowed ? 'block' : 'none';
+        document.getElementById('recycleGate').style.display = allowed ? 'none' : 'block';
+    })();
+
+    function submitRecycle(e){
+        e.preventDefault();
+        alert('Thanks! Your pickup request has been submitted.');
+        e.target.reset();
+        return false;
+    }
+    function calcImpact(){
+        const n = Math.max(0, parseInt(document.getElementById('rcount').value||'0',10));
+        const points = n*10;
+        document.getElementById('impactResult').textContent = `You could earn ~${points} reward points and reduce waste.`;
+    }
+    
+    // Add accordion functionality
+    document.addEventListener('DOMContentLoaded', function() {
+        const accordionHeaders = document.querySelectorAll('.accordion-header');
+        
+        accordionHeaders.forEach(header => {
+            header.addEventListener('click', function() {
+                this.classList.toggle('active');
+                const panel = this.nextElementSibling;
+                if (panel.style.maxHeight) {
+                    panel.style.maxHeight = null;
+                } else {
+                    panel.style.maxHeight = panel.scrollHeight + "px";
+                }
+            });
+        });
+    });
+    </script>
+</body>
+</html>
