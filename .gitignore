@@ -1,0 +1,18 @@
+# Node
+chatgpt/chatbot/node_modules/
+chatgpt/chatbot/.next/
+chatgpt/chatbot/.vercel/
+
+# Python/DB
+storage/*.db
+__pycache__/
+
+# Logs
+logs/
+*.log
+
+# OS/Editor
+.DS_Store
+Thumbs.db
+.env
+.env.local
