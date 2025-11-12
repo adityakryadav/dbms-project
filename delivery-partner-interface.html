@@ -338,10 +338,7 @@
             <!-- Map Section -->
             <div class="map-container">
                 <h2>Delivery Map</h2>
-                <div class="map-image">
-                    <p>Map will be displayed here</p>
-                    <!-- In a real implementation, this would be replaced with an actual map API -->
-                </div>
+                <div id="deliveryMap" style="width:100%; height:380px; border-radius:8px; border:1px solid #e0e0e0; overflow:hidden;"></div>
                 <div id="route-details">
                     <h3>Route Details</h3>
                     <p>Select an order to view the delivery route</p>
@@ -371,7 +368,75 @@
         </div>
     </div>
     
+    <!-- Google Maps JS API -->
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBvVSII8FDOFvpo_9UdTSSfULD24NC91s8"></script>
     <script>
+        let map, directionsService, directionsRenderer, geocoder;
+
+        function initMap() {
+            const mumbai = { lat: 19.0760, lng: 72.8777 };
+            map = new google.maps.Map(document.getElementById('deliveryMap'), {
+                center: mumbai,
+                zoom: 12,
+                mapTypeControl: false,
+                streetViewControl: false,
+                fullscreenControl: false
+            });
+            directionsService = new google.maps.DirectionsService();
+            directionsRenderer = new google.maps.DirectionsRenderer({ map });
+            geocoder = new google.maps.Geocoder();
+        }
+
+        function showRoute(fromAddr, toAddr) {
+            if (!map) initMap();
+            directionsService.route({
+                origin: fromAddr,
+                destination: toAddr,
+                travelMode: google.maps.TravelMode.DRIVING
+            }, (result, status) => {
+                if (status === google.maps.DirectionsStatus.OK) {
+                    directionsRenderer.setDirections(result);
+                    const leg = result.routes[0]?.legs[0];
+                    const distance = leg?.distance?.text || '—';
+                    const duration = leg?.duration?.text || '—';
+                    document.getElementById('route-details').innerHTML = `
+                        <h3>Route Details</h3>
+                        <p><strong>From:</strong> ${fromAddr}</p>
+                        <p><strong>To:</strong> ${toAddr}</p>
+                        <p><strong>Distance:</strong> ${distance} • <strong>ETA:</strong> ${duration}</p>
+                    `;
+                } else {
+                    document.getElementById('route-details').innerHTML = `
+                        <h3>Route Details</h3>
+                        <p>Could not fetch route. Status: ${status}</p>
+                        <p>From: ${fromAddr}<br>To: ${toAddr}</p>
+                    `;
+                }
+            });
+        }
+
+        // Hook up "View Map" buttons to plot selected order addresses
+        document.addEventListener('DOMContentLoaded', () => {
+            initMap();
+            document.querySelectorAll('.view-map').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const card = btn.closest('.order-card');
+                    if (!card) return;
+                    const detailPs = card.querySelectorAll('.order-details p');
+                    let fromAddr = '', toAddr = '';
+                    detailPs.forEach(p => {
+                        const text = p.textContent.trim();
+                        if (text.startsWith('From:')) fromAddr = text.replace('From:', '').trim();
+                        if (text.startsWith('To:')) toAddr = text.replace('To:', '').trim();
+                    });
+                    if (fromAddr && toAddr) {
+                        showRoute(fromAddr + ', Mumbai', toAddr + ', Mumbai');
+                    } else {
+                        alert('Could not parse addresses for this order.');
+                    }
+                });
+            });
+        });
         // Tab switching functionality
         document.querySelectorAll('.tab').forEach(tab => {
             tab.addEventListener('click', () => {
