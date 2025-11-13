@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Donations - Genricycle</title>
+<link rel="stylesheet" href="/assets/css/styles.css">
+    <style>
+        .hero-section {
+            background-color: #1565C0;
+            color: white;
+            padding: 3rem 0;
+            text-align: center;
+        }
+        .donation-form {
+            max-width: 800px;
+            margin: 2rem auto;
+            padding: 2rem;
+            background: #f9f9f9;
+            border-radius: 8px;
+        }
+        .form-group {
+            margin-bottom: 1rem;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+        }
+        .form-group input, .form-group select, .form-group textarea {
+            width: 100%;
+            padding: 0.5rem;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        .btn {
+            background: #2E7D32;
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .faq-section {
+            max-width: 800px;
+            margin: 2rem auto;
+        }
+        .faq-item {
+            margin-bottom: 1rem;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        .faq-question {
+            background: #f5f5f5;
+            padding: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        .faq-answer {
+            padding: 1rem;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <!-- Home Link -->
+    <div style="background: #2E7D32; padding: 1rem; text-align: center;">
+<a href="/pages/home/index.html" style="color: white; text-decoration: none; font-weight: bold;">
+            <i class="fas fa-home"></i> Back to Home
+        </a>
+    </div>
+
+    <section class="hero-section">
+        <div class="container">
+            <h1>Donate to Genricycle</h1>
+            <p>Support our mission to provide affordable healthcare and sustainable recycling solutions.</p>
+        </div>
+    </section>
+
+    <div class="container">
+        <section class="donation-form">
+            <h2>Make a Donation</h2>
+            <form id="donationForm">
+                <div class="form-group">
+                    <label for="name">Full Name</label>
+                    <input type="text" id="name" required>
+                </div>
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <input type="email" id="email" required>
+                </div>
+                <div class="form-group">
+                    <label for="donationType">Donation Type</label>
+                    <select id="donationType" required>
+                        <option value="">Select</option>
+                        <option value="medicines">Medicines</option>
+                        <option value="blood">Blood</option>
+                        <option value="organs">Body Parts/Organs</option>
+                    </select>
+                </div>
+
+                <!-- Dynamic form fields based on donation type -->
+
+                <div id="medicineFields" class="dynamic-fields" style="display:none;">
+                    <div class="form-group">
+                        <label for="medicineName">Medicine Name</label>
+                        <input type="text" id="medicineName">
+                    </div>
+                    <div class="form-group">
+                        <label for="medicineQuantity">Quantity</label>
+                        <input type="number" id="medicineQuantity" min="1">
+                    </div>
+                    <div class="form-group">
+                        <label for="expiryDate">Expiry Date</label>
+                        <input type="date" id="expiryDate">
+                    </div>
+                    <div class="form-group">
+                        <label for="medicineCondition">Condition</label>
+                        <select id="medicineCondition">
+                            <option value="unopened">Unopened</option>
+                            <option value="opened">Opened (partially used)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div id="bloodFields" class="dynamic-fields" style="display:none;">
+                    <div class="form-group">
+                        <label for="bloodType">Blood Type</label>
+                        <select id="bloodType">
+                            <option value="A+">A+</option>
+                            <option value="A-">A-</option>
+                            <option value="B+">B+</option>
+                            <option value="B-">B-</option>
+                            <option value="AB+">AB+</option>
+                            <option value="AB-">AB-</option>
+                            <option value="O+">O+</option>
+                            <option value="O-">O-</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="lastDonation">Last Donation Date (if any)</label>
+                        <input type="date" id="lastDonation">
+                    </div>
+                    <div class="form-group">
+                        <label for="medicalHistory">Any Medical Conditions</label>
+                        <textarea id="medicalHistory" rows="2"></textarea>
+                    </div>
+                </div>
+
+                <div id="organFields" class="dynamic-fields" style="display:none;">
+                    <div class="form-group">
+                        <label for="organType">Organ/Body Part Type</label>
+                        <select id="organType">
+                            <option value="kidney">Kidney</option>
+                            <option value="liver">Liver (partial)</option>
+                            <option value="cornea">Cornea</option>
+                            <option value="bone-marrow">Bone Marrow</option>
+                            <option value="after-death">Full Body (After Death)</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="organMedicalHistory">Medical History</label>
+                        <textarea id="organMedicalHistory" rows="3"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>
+                            <input type="checkbox" id="organConsent" required>
+                            I understand this is a serious decision and consent to being contacted by a medical professional
+                        </label>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="message">Additional Message (Optional)</label>
+                    <textarea id="message" rows="4"></textarea>
+                </div>
+                <button class="btn" type="submit">Submit Donation</button>
+            </form>
+        </section>
+
+        <section class="faq-section">
+            <h2>Frequently Asked Questions</h2>
+            
+            <div class="faq-item">
+                <div class="faq-question">Is my donation tax-deductible?</div>
+                <div class="faq-answer">
+                    <p>Yes, all donations to Genricycle are tax-deductible. You will receive a tax receipt for your contribution.</p>
+                </div>
+            </div>
+            
+            <div class="faq-item">
+                <div class="faq-question">How is my donation used?</div>
+                <div class="faq-answer">
+                    <p>Your donations directly support our recycling initiatives, subsidize medicine costs for those in need, and help develop sustainable healthcare solutions.</p>
+                </div>
+            </div>
+            
+            <div class="faq-item">
+                <div class="faq-question">Can I make a donation in someone's honor?</div>
+                <div class="faq-answer">
+                    <p>Yes, you can make a donation in honor or memory of someone. Simply include this information in the message field.</p>
+                </div>
+            </div>
+            
+            <div class="faq-item">
+                <div class="faq-question">Is there a minimum donation amount?</div>
+                <div class="faq-answer">
+                    <p>We appreciate donations of any amount. Our suggested minimum online donation is ₹100.</p>
+                </div>
+            </div>
+            
+            <div class="faq-item">
+                <div class="faq-question">How can I donate medicines?</div>
+                <div class="faq-answer">
+                    <p>You can donate medicines through our online form. We accept unopened medicines that are not expired. For partially used medicines, our team will evaluate them before acceptance. All donated medicines undergo quality checks before redistribution.</p>
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question">What are the requirements for blood donation?</div>
+                <div class="faq-answer">
+                    <p>Blood donors must be at least 18 years old, weigh at least 50kg, and be in good health. You should not have donated blood in the last 3 months. After submitting the form, our medical team will contact you to schedule an appointment at our partner blood bank.</p>
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question">How does organ/body part donation work?</div>
+                <div class="faq-answer">
+                    <p>Organ donation is a serious decision. After submitting your interest through our form, a medical professional will contact you to discuss the process, eligibility, and legal requirements. We facilitate both living donations (kidney, partial liver, bone marrow) and after-death donations through proper medical and legal channels.</p>
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question">Is there any compensation for blood or organ donation?</div>
+                <div class="faq-answer">
+                    <p>No, all blood and organ donations are voluntary and without financial compensation, as per medical ethics and Indian law. However, donors may receive free health check-ups and screening as part of the donation process.</p>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <script>
+    // Handle form submission
+    document.getElementById('donationForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        // Get the selected donation type
+        const donationType = document.getElementById('donationType').value;
+        let message = 'Thank you! We\'ll contact you with next steps.';
+        
+        if (donationType === 'medicines') {
+            message = 'Thank you for donating medicines! Our team will contact you about collection.';
+        } else if (donationType === 'blood') {
+            message = 'Thank you for your interest in blood donation! Our medical team will contact you to schedule an appointment.';
+        } else if (donationType === 'organs') {
+            message = 'Thank you for your interest in organ donation. A medical professional will contact you to discuss the next steps.';
+        }
+        
+        alert(message);
+        this.reset();
+        
+        // Reset form display
+        document.querySelectorAll('.dynamic-fields').forEach(field => {
+            field.style.display = 'none';
+        });
+    });
+
+    // Handle donation type change
+    document.getElementById('donationType').addEventListener('change', function() {
+        // Hide all dynamic fields first
+        document.querySelectorAll('.dynamic-fields').forEach(field => {
+            field.style.display = 'none';
+        });
+        
+        // Show relevant fields based on selection
+        const selectedType = this.value;
+        if (selectedType === 'medicines') {
+            document.getElementById('medicineFields').style.display = 'block';
+        } else if (selectedType === 'blood') {
+            document.getElementById('bloodFields').style.display = 'block';
+        } else if (selectedType === 'organs') {
+            document.getElementById('organFields').style.display = 'block';
+        }
+    });
+
+    // Toggle FAQ answers
+    document.querySelectorAll('.faq-question').forEach(question => {
+        question.addEventListener('click', function() {
+            const answer = this.nextElementSibling;
+            answer.style.display = answer.style.display === 'block' ? 'none' : 'block';
+        });
+    });
+    </script>
+</body>
+</html>

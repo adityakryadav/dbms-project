@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Partnerships - Genricycle</title>
+<link rel="stylesheet" href="/assets/css/styles.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <!-- Hero / Top Bar -->
+    <section class="partner-hero">
+        <div class="container">
+            <h1>Partner with Genricycle</h1>
+            <p>Join our network to reach millions of users, drive orders, and build trust with eco‑friendly, affordable healthcare solutions.</p>
+            <div class="partner-features">
+                <div class="pf-item"><i class="fas fa-users"></i><span>Large, engaged customer base</span></div>
+                <div class="pf-item"><i class="fas fa-shield-check"></i><span>Compliance & quality assurance</span></div>
+                <div class="pf-item"><i class="fas fa-truck-fast"></i><span>Integrated logistics support</span></div>
+                <div class="pf-item"><i class="fas fa-leaf"></i><span>Recycle & sustainability programs</span></div>
+                <div class="pf-item"><i class="fas fa-bullhorn"></i><span>Co‑marketing & brand visibility</span></div>
+                <div class="pf-item"><i class="fas fa-chart-line"></i><span>Analytics & growth insights</span></div>
+            </div>
+        </div>
+    </section>
+
+    <main class="partner-main">
+        <div class="container">
+            <!-- About / Know More -->
+            <section class="partner-about">
+                <div class="about-card">
+                    <h2>About Us</h2>
+                    <p>Genricycle connects consumers with trusted healthcare brands, certified labs, and pharmacies while promoting affordability and sustainability through recycling initiatives.</p>
+<a class="btn" href="/pages/home/index.html">Visit Homepage</a>
+                </div>
+                <div class="about-card">
+                    <h2>Know More</h2>
+                    <p>From co‑marketing to last‑mile logistics, we tailor programs for brands, labs, hospitals, and NGOs. Explore engagement models that grow your reach and impact.</p>
+                    <a class="btn btn-primary" href="#partner-form">Become a partner</a>
+                </div>
+            </section>
+
+            <!-- Partnerships Gallery -->
+            <section class="partner-gallery">
+                <div class="pg-grid">
+                    <figure class="pg-item"><img src="partner1.jpg" alt="Partnership handshake" loading="lazy" onerror="this.onerror=null;this.src='https://via.placeholder.com/800x500?text=Partnership'">
+                    </figure>
+                    <figure class="pg-item"><img src="partner2.jpg" alt="Partner doctors" loading="lazy" onerror="this.onerror=null;this.src='https://via.placeholder.com/800x500?text=Partners'">
+                    </figure>
+                    <figure class="pg-item"><img src="partner3.jpg" alt="Team collaboration" loading="lazy" onerror="this.onerror=null;this.src='https://via.placeholder.com/800x500?text=Collaboration'">
+                    </figure>
+                </div>
+            </section>
+
+            <section class="partner-brands">
+                <h2>Trusted by leading brands</h2>
+                <div class="brand-grid">
+                    <div class="brand-card"><img src="assets/brands/cipla.png" alt="Cipla"></div>
+                    <div class="brand-card"><img src="assets/brands/drreddy.png" alt="Dr. Reddy's"></div>
+                    <div class="brand-card"><img src="assets/brands/abbott.png" alt="Abbott"></div>
+                    <div class="brand-card"><img src="assets/brands/srl.png" alt="SRL Diagnostics"></div>
+                    <div class="brand-card"><img src="assets/brands/lalpath.png" alt="Lal PathLabs"></div>
+                    <div class="brand-card"><img src="assets/brands/apollo.png" alt="Apollo Pharmacy"></div>
+                </div>
+                <p class="brand-note">Add or replace logos in <code>assets/brands/</code> with your official partners.</p>
+            </section>
+
+            <!-- Contact Form -->
+            <section class="partner-form" id="partner-form">
+                <h2>Partner With Us</h2>
+                <form id="partnershipForm" class="partner-form-grid" onsubmit="return submitPartnerForm(event)">
+                    <div class="form-field">
+                        <label for="company">Company Name</label>
+                        <input type="text" id="company" required>
+                    </div>
+                    <div class="form-field">
+                        <label for="contact">Contact Person</label>
+                        <input type="text" id="contact" required>
+                    </div>
+                    <div class="form-field">
+                        <label for="email">Email</label>
+                        <input type="email" id="email" required>
+                    </div>
+                    <div class="form-field">
+                        <label for="phone">Phone</label>
+                        <input type="tel" id="phone" required>
+                    </div>
+                    <div class="form-field">
+                        <label for="category">Category</label>
+                        <select id="category" required>
+                            <option value="">Select</option>
+                            <option>Brand</option>
+                            <option>Lab / Diagnostics</option>
+                            <option>Pharmacy</option>
+                            <option>Logistics</option>
+                            <option>NGO / CSR</option>
+                        </select>
+                    </div>
+                    <div class="form-field">
+                        <label for="city">City</label>
+                        <input type="text" id="city" required>
+                    </div>
+                    <div class="form-field span-2">
+                        <label for="website">Website</label>
+                        <input type="url" id="website" placeholder="https://">
+                    </div>
+                    <div class="form-field span-2">
+                        <label for="message">How would you like to partner?</label>
+                        <textarea id="message" rows="4" required></textarea>
+                    </div>
+                    <div class="form-actions span-2">
+                        <label class="checkbox">
+                            <input type="checkbox" id="consent" required>
+                            I agree to be contacted by Genricycle.
+                        </label>
+                        <button class="btn btn-primary" type="submit">Submit Request</button>
+                    </div>
+                </form>
+            </section>
+        </div>
+    </main>
+
+    <script>
+    function submitPartnerForm(e){
+        e.preventDefault();
+        const company = document.getElementById('company').value.trim();
+        const contact = document.getElementById('contact').value.trim();
+        const email = document.getElementById('email').value.trim();
+        const phone = document.getElementById('phone').value.trim();
+        const category = document.getElementById('category').value;
+        if(!company || !contact || !email || !phone || !category){
+            alert('Please complete all required fields.');
+            return false;
+        }
+        alert('Thank you! We\'ll reach out shortly.');
+        e.target.reset();
+        return false;
+    }
+    </script>
+</body>
+</html>
+

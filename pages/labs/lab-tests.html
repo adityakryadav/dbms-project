@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Lab Tests - Genricycle</title>
-<link rel="stylesheet" href="assets/css/styles.css">
+<link rel="stylesheet" href="/assets/css/styles.css">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
         /* Auth and Portal */
@@ -487,7 +487,7 @@
             <div class="portal-grid">
                 <div class="portal-sidebar">
                     <a href="#" data-section="notifications" class="active">Notifications</a>
-                    <a href="recycle.html">Recycle</a>
+<a href="/pages/recycle/recycle.html">Recycle</a>
                     <a href="#" data-section="reportsScheduled">Reports Scheduled & Rewards</a>
                     <a href="#" data-section="settings">Settings</a>
                     <a href="#" data-section="reportHistory">Report History</a>
@@ -786,7 +786,7 @@
                     const pm = document.getElementById('paymentModal');
                     if (pm) document.body.removeChild(pm);
                     // Redirect to Hospital/Lab interface portal
-                    window.location.href = 'hospital-lab-interface.html';
+window.location.href = '/pages/labs/hospital-lab-interface.html';
                 }, 2000);
             }, 1500);
         }

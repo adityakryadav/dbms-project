@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Feedback - Genricycle</title>
+<link rel="stylesheet" href="/assets/css/styles.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        .page-wrapper { max-width: 800px; margin: 0 auto; padding: 2rem 20px; }
+        .simple-card { background: #fff; border: 1px solid rgba(46,125,50,0.12); border-radius: 12px; padding: 1.5rem; box-shadow: 0 4px 12px rgba(0,0,0,0.06); }
+        .back-link { display: inline-flex; align-items: center; gap: .5rem; text-decoration: none; color: #2E7D32; font-weight: 600; margin-bottom: 1rem; }
+        .form-group { margin-bottom: 1rem; }
+        .form-group label { display:block; margin-bottom:.5rem; }
+        .form-group input, .form-group textarea, .form-group select { width:100%; padding:.75rem; border:2px solid #e0e0e0; border-radius:6px; font-size:1rem; }
+        .form-group textarea { min-height: 140px; }
+    </style>
+</head>
+<body>
+    <div class="page-wrapper">
+<a class="back-link" href="/pages/home/index.html"><i class="fas fa-arrow-left"></i> Back to Home</a>
+        <h1>Feedback</h1>
+        <div class="simple-card">
+            <form id="feedbackForm" onsubmit="return handleFeedbackSubmit(event)">
+                <div class="form-group">
+                    <label for="fname">Name</label>
+                    <input id="fname" type="text" required>
+                </div>
+                <div class="form-group">
+                    <label for="femail">Email</label>
+                    <input id="femail" type="email" required>
+                </div>
+                <div class="form-group">
+                    <label>Overall rating</label>
+                    <div id="starRating" class="stars">
+                        <span data-v="1">★</span><span data-v="2">★</span><span data-v="3">★</span><span data-v="4">★</span><span data-v="5">★</span>
+                    </div>
+                    <input type="hidden" id="frating" required>
+                </div>
+                <div class="form-group">
+                    <label for="fmsg">Your feedback</label>
+                    <textarea id="fmsg" required maxlength="500"></textarea>
+                    <small id="fmsgCount">0/500</small>
+                </div>
+                <button class="btn btn-primary" type="submit">Submit</button>
+            </form>
+        </div>
+    </div>
+    <script>
+    // star rating
+    const stars = document.querySelectorAll('#starRating span');
+    const frating = document.getElementById('frating');
+    stars.forEach(s=>{
+        s.style.cursor = 'pointer';
+        s.addEventListener('mouseover', ()=>highlight(s.dataset.v));
+        s.addEventListener('click', ()=>{ frating.value=s.dataset.v; highlight(s.dataset.v); });
+    });
+    function highlight(v){ stars.forEach(s=>{ s.style.color = Number(s.dataset.v)<=Number(v)? '#FFD700' : '#ddd'; }); }
+    // char count
+    const fmsg = document.getElementById('fmsg');
+    if (fmsg) fmsg.addEventListener('input', ()=>{ document.getElementById('fmsgCount').textContent = fmsg.value.length + '/500'; });
+    // submit
+    function handleFeedbackSubmit(e){
+        e.preventDefault();
+        if(!frating.value){ alert('Please select a star rating.'); return false; }
+        alert('Thank you for your feedback!');
+        e.target.reset();
+        highlight(0);
+        document.getElementById('fmsgCount').textContent = '0/500';
+        return false;
+    }
+    </script>
+</body>
+</html>

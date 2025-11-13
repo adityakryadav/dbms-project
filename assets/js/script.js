@@ -21,8 +21,8 @@ const welcomeSection = document.querySelector('.welcome-section');
 
 // Initialize the app
 document.addEventListener('DOMContentLoaded', async function() {
-    // Check if user is logged in (in a real app, this would check localStorage or cookies)
-    checkLoginStatus();
+    // Check if user is logged in and refresh from backend
+    await checkLoginStatus();
     
     // Load cart from localStorage
     loadCart();
@@ -53,21 +53,75 @@ document.addEventListener('DOMContentLoaded', async function() {
 });
 
 // Check login status
-function checkLoginStatus() {
-    const savedUser = localStorage.getItem('genricycle_user') || localStorage.getItem('userData');
-    if (savedUser) {
+async function checkLoginStatus() {
+    const savedUserRaw = localStorage.getItem('genricycle_user') || localStorage.getItem('userData');
+    let savedUser = null;
+    if (savedUserRaw) {
+        try { savedUser = JSON.parse(savedUserRaw); } catch(e) { savedUser = null; }
+    }
+    if (savedUser && savedUser.email) {
         try {
-            currentUser = JSON.parse(savedUser);
-        } catch (e) {
-            currentUser = { name: 'User' };
+            const resp = await fetch(`/api/user?email=${encodeURIComponent(savedUser.email)}`);
+            if (resp.status === 200) {
+                const data = await resp.json();
+                currentUser = data;
+                isLoggedIn = true;
+                localStorage.setItem('genricycle_user', JSON.stringify(currentUser));
+            } else if (resp.status === 404) {
+                // Account deleted on server; clear local session
+                localStorage.removeItem('genricycle_user');
+                localStorage.removeItem('userData');
+                currentUser = null;
+                isLoggedIn = false;
+                showNotification('Your account was removed. You have been logged out.', 'info');
+            } else {
+                // Keep local user but mark logged in
+                currentUser = savedUser;
+                isLoggedIn = true;
+            }
+        } catch (err) {
+            // Network issue, fallback to local
+            currentUser = savedUser;
+            isLoggedIn = true;
         }
-        isLoggedIn = true;
     } else {
         currentUser = null;
         isLoggedIn = false;
     }
-    // Always update UI after checking status
     updateUI();
+}
+
+// Delete account helper
+async function deleteAccount() {
+    if (!currentUser || !currentUser.email) {
+        showNotification('No logged-in user found.', 'error');
+        return;
+    }
+    const confirmed = window.confirm('Are you sure you want to delete your account? This cannot be undone.');
+    if (!confirmed) return;
+    try {
+        const resp = await fetch('/api/user', {
+            method: 'DELETE',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email: currentUser.email })
+        });
+        if (resp.status === 200) {
+            localStorage.removeItem('genricycle_user');
+            localStorage.removeItem('userData');
+            isLoggedIn = false;
+            currentUser = null;
+            updateUI();
+            showNotification('Your account has been deleted.', 'success');
+            // Navigate home
+            window.location.href = '/pages/home/index.html';
+        } else if (resp.status === 404) {
+            showNotification('Account not found on server.', 'error');
+        } else {
+            showNotification('Failed to delete account. Please try again.', 'error');
+        }
+    } catch (err) {
+        showNotification('Network error. Please try again.', 'error');
+    }
 }
 
 // Update UI based on login status
@@ -500,25 +554,44 @@ const loginModalEl = document.getElementById('loginModal');
 if (loginModalEl) {
     const loginForm = loginModalEl.querySelector('form');
     if (loginForm) {
-        loginForm.addEventListener('submit', function(e) {
+        loginForm.addEventListener('submit', async function(e) {
             e.preventDefault();
-            const email = document.getElementById('loginEmail').value;
-            const password = document.getElementById('loginPassword').value;
+            const emailEl = document.getElementById('loginEmail');
+            const passwordEl = document.getElementById('loginPassword');
+            const email = emailEl ? emailEl.value.trim() : '';
+            const password = passwordEl ? passwordEl.value : '';
             if (!email || !password) {
                 alert('Please fill in all fields');
                 return;
             }
-            if (email && password) {
-                currentUser = { name: email.split('@')[0], email };
-                isLoggedIn = true;
-                localStorage.setItem('genricycle_user', JSON.stringify(currentUser));
-                closeModal('loginModal');
-                updateUI();
-                document.getElementById('loginEmail').value = '';
-                document.getElementById('loginPassword').value = '';
-                showNotification('Login successful!', 'success');
-            } else {
-                alert('Invalid credentials');
+            try {
+                const resp = await fetch('/api/auth/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, password })
+                });
+                if (resp.status === 200) {
+                    const data = await resp.json();
+                    currentUser = data.user;
+                    isLoggedIn = true;
+                    localStorage.setItem('genricycle_user', JSON.stringify(currentUser));
+                    closeModal('loginModal');
+                    updateUI();
+                    if (emailEl) emailEl.value = '';
+                    if (passwordEl) passwordEl.value = '';
+                    showNotification('Login successful!', 'success');
+                } else if (resp.status === 401) {
+                    showNotification('Incorrect password. Please try again.', 'error');
+                    if (passwordEl) passwordEl.value = '';
+                } else if (resp.status === 404) {
+                    showNotification('No account found for this email. Please sign up.', 'error');
+                    if (passwordEl) passwordEl.value = '';
+                } else {
+                    showNotification('Login failed. Please try again later.', 'error');
+                }
+            } catch (err) {
+                console.error('Login error', err);
+                showNotification('Network error. Please try again.', 'error');
             }
         });
     }
@@ -529,11 +602,13 @@ const signupModalEl = document.getElementById('signupModal');
 if (signupModalEl) {
     const signupForm = signupModalEl.querySelector('form');
     if (signupForm) {
-        signupForm.addEventListener('submit', function(e) {
+        signupForm.addEventListener('submit', async function(e) {
             e.preventDefault();
-            const name = document.getElementById('signupName').value;
-            const email = document.getElementById('signupEmail').value;
-            const password = document.getElementById('signupPassword').value;
+            const name = document.getElementById('signupName').value.trim();
+            const email = document.getElementById('signupEmail').value.trim();
+            const passwordEl = document.getElementById('signupPassword');
+            const password = passwordEl ? passwordEl.value : '';
+            const role = (document.getElementById('signupRole') && document.getElementById('signupRole').value) || 'user';
             if (!name || !email || !password) {
                 alert('Please fill in all fields');
                 return;
@@ -542,16 +617,32 @@ if (signupModalEl) {
                 alert('Password must be at least 6 characters long');
                 return;
             }
-            const role = (document.getElementById('signupRole') && document.getElementById('signupRole').value) || 'user';
-            currentUser = { name, email, role };
-            isLoggedIn = true;
-            localStorage.setItem('genricycle_user', JSON.stringify(currentUser));
-            closeModal('signupModal');
-            updateUI();
-            document.getElementById('signupName').value = '';
-            document.getElementById('signupEmail').value = '';
-            document.getElementById('signupPassword').value = '';
-            showNotification('Account created successfully!', 'success');
+            try {
+                const resp = await fetch('/api/auth/signup', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ name, email, password, role })
+                });
+                if (resp.status === 201) {
+                    const data = await resp.json();
+                    currentUser = data.user;
+                    isLoggedIn = true;
+                    localStorage.setItem('genricycle_user', JSON.stringify(currentUser));
+                    closeModal('signupModal');
+                    updateUI();
+                    document.getElementById('signupName').value = '';
+                    document.getElementById('signupEmail').value = '';
+                    if (passwordEl) passwordEl.value = '';
+                    showNotification('Account created successfully!', 'success');
+                } else if (resp.status === 409) {
+                    showNotification('Account already exists. Please log in.', 'error');
+                } else {
+                    showNotification('Signup failed. Please try again later.', 'error');
+                }
+            } catch (err) {
+                console.error('Signup error', err);
+                showNotification('Network error. Please try again.', 'error');
+            }
         });
     }
 }

@@ -2,6 +2,7 @@ import os
 import sqlite3
 from datetime import datetime
 from flask import Flask, jsonify, send_from_directory, g
+from werkzeug.security import generate_password_hash, check_password_hash
 
 BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
 DB_PATH = os.path.join(BASE_DIR, 'storage', 'genricycle.db')
@@ -166,6 +167,11 @@ def init_db():
     # Ensure optional columns exist on users table
     c.execute("PRAGMA table_info(users)")
     existing_cols = {row[1] for row in c.fetchall()}
+    if 'password_hash' not in existing_cols:
+        try:
+            c.execute("ALTER TABLE users ADD COLUMN password_hash TEXT")
+        except Exception:
+            pass
     if 'language' not in existing_cols:
         try:
             c.execute("ALTER TABLE users ADD COLUMN language TEXT")
@@ -253,7 +259,48 @@ def teardown_db(exception):
 
 @app.route('/')
 def index():
-    return send_from_directory(BASE_DIR, 'index.html')
+    # Serve the reorganized home page explicitly from pages/home
+    home_dir = os.path.join(BASE_DIR, 'pages', 'home')
+    return send_from_directory(home_dir, 'index.html')
+
+@app.route('/api/db/summary')
+def api_db_summary():
+    db = get_db()
+    tables_rows = db.execute("SELECT name FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%' ORDER BY name").fetchall()
+    tables = [r['name'] if isinstance(r, sqlite3.Row) else r[0] for r in tables_rows]
+    summary = {}
+    for t in tables:
+        cols = db.execute(f"PRAGMA table_info({t})").fetchall()
+        fks = db.execute(f"PRAGMA foreign_key_list({t})").fetchall()
+        count = db.execute(f"SELECT COUNT(*) AS c FROM {t}").fetchone()[0]
+        sample = db.execute(f"SELECT * FROM {t} LIMIT 5").fetchall()
+        summary[t] = {
+            'columns': [
+                {
+                    'cid': c['cid'] if isinstance(c, sqlite3.Row) else c[0],
+                    'name': c['name'] if isinstance(c, sqlite3.Row) else c[1],
+                    'type': c['type'] if isinstance(c, sqlite3.Row) else c[2],
+                    'notnull': c['notnull'] if isinstance(c, sqlite3.Row) else c[3],
+                    'dflt_value': c['dflt_value'] if isinstance(c, sqlite3.Row) else c[4],
+                    'pk': c['pk'] if isinstance(c, sqlite3.Row) else c[5],
+                } for c in cols
+            ],
+            'foreign_keys': [
+                {
+                    'id': fk['id'] if isinstance(fk, sqlite3.Row) else fk[0],
+                    'seq': fk['seq'] if isinstance(fk, sqlite3.Row) else fk[1],
+                    'table': fk['table'] if isinstance(fk, sqlite3.Row) else fk[2],
+                    'from': fk['from'] if isinstance(fk, sqlite3.Row) else fk[3],
+                    'to': fk['to'] if isinstance(fk, sqlite3.Row) else fk[4],
+                    'on_update': fk['on_update'] if isinstance(fk, sqlite3.Row) else fk[5],
+                    'on_delete': fk['on_delete'] if isinstance(fk, sqlite3.Row) else fk[6],
+                    'match': fk['match'] if isinstance(fk, sqlite3.Row) else fk[7],
+                } for fk in fks
+            ],
+            'row_count': count,
+            'sample_rows': [dict(r) for r in sample],
+        }
+    return jsonify({'db_path': DB_PATH, 'tables': tables, 'summary': summary})
 
 @app.route('/api/medicines')
 def api_medicines():
@@ -290,7 +337,7 @@ def api_lab_tests():
     ''').fetchall()
     return jsonify([dict(r) for r in rows])
 
-@app.route('/api/user', methods=['GET', 'POST'])
+@app.route('/api/user', methods=['GET', 'POST', 'DELETE'])
 def api_user():
     db = get_db()
     if os.environ.get('FLASK_ENV') == 'development':
@@ -304,7 +351,7 @@ def api_user():
         if not row:
             return jsonify({'error': 'not found'}), 404
         return jsonify(dict(row))
-    else:
+    elif request.method == 'POST':
         data = request.get_json(force=True) or {}
         name = data.get('name') or 'User'
         email = data.get('email')
@@ -328,6 +375,58 @@ def api_user():
             db.commit()
             row = db.execute('SELECT id, name, email, phone, role, language, currency, created_at FROM users WHERE email = ?', (email,)).fetchone()
             return jsonify({'status': 'created', 'user': dict(row)}), 201
+    else:  # DELETE
+        data = request.get_json(silent=True) or {}
+        email = data.get('email') or request.args.get('email')
+        if not email:
+            return jsonify({'error': 'email is required to delete'}), 400
+        user = db.execute('SELECT id FROM users WHERE email = ?', (email,)).fetchone()
+        if not user:
+            return jsonify({'error': 'not found'}), 404
+        db.execute('DELETE FROM users WHERE id = ?', (user['id'],))
+        db.commit()
+        return jsonify({'status': 'deleted'}), 200
+
+@app.route('/api/auth/signup', methods=['POST'])
+def api_auth_signup():
+    db = get_db()
+    from flask import request
+    data = request.get_json(force=True) or {}
+    name = data.get('name') or 'User'
+    email = data.get('email')
+    password = data.get('password')
+    role = data.get('role') or 'customer'
+    phone = data.get('phone')
+    language = data.get('language')
+    currency = data.get('currency')
+    if not email or not password:
+        return jsonify({'error': 'email and password are required'}), 400
+    existing = db.execute('SELECT id FROM users WHERE email = ?', (email,)).fetchone()
+    if existing:
+        return jsonify({'error': 'account already exists'}), 409
+    pwd_hash = generate_password_hash(password)
+    db.execute('INSERT INTO users(name, email, phone, role, language, currency, password_hash) VALUES(?, ?, ?, ?, ?, ?, ?)',
+               (name, email, phone, role, language, currency, pwd_hash))
+    db.commit()
+    row = db.execute('SELECT id, name, email, phone, role, language, currency, created_at FROM users WHERE email = ?', (email,)).fetchone()
+    return jsonify({'status': 'created', 'user': dict(row)}), 201
+
+@app.route('/api/auth/login', methods=['POST'])
+def api_auth_login():
+    db = get_db()
+    from flask import request
+    data = request.get_json(force=True) or {}
+    email = data.get('email')
+    password = data.get('password')
+    if not email or not password:
+        return jsonify({'error': 'email and password are required'}), 400
+    row = db.execute('SELECT id, name, email, phone, role, language, currency, created_at, password_hash FROM users WHERE email = ?', (email,)).fetchone()
+    if not row:
+        return jsonify({'error': 'not found'}), 404
+    if not row['password_hash'] or not check_password_hash(row['password_hash'], password):
+        return jsonify({'error': 'incorrect password'}), 401
+    user = {k: row[k] for k in ['id', 'name', 'email', 'phone', 'role', 'language', 'currency', 'created_at']}
+    return jsonify({'status': 'ok', 'user': user})
 
 
 if __name__ == '__main__':
