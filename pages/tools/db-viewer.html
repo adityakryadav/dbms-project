@@ -1,0 +1,150 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Database Viewer</title>
+    <link rel="stylesheet" href="/assets/css/styles.css" />
+    <style>
+      body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif; margin: 0; padding: 0; }
+      header { background: #0a7; color: #fff; padding: 16px; }
+      main { padding: 16px; max-width: 1200px; margin: 0 auto; }
+      .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; }
+      .card { border: 1px solid #ddd; border-radius: 8px; padding: 12px; background: #fff; }
+      .muted { color: #666; }
+      table { width: 100%; border-collapse: collapse; }
+      th, td { border: 1px solid #eee; padding: 6px 8px; text-align: left; font-size: 14px; }
+      details { border: 1px solid #eee; border-radius: 8px; padding: 8px; background: #fafafa; }
+      summary { cursor: pointer; font-weight: 600; }
+      .badge { display: inline-block; padding: 2px 8px; border-radius: 999px; background: #eef; color: #336; font-size: 12px; }
+      .error { color: #b00; background: #fee; border: 1px solid #f99; padding: 10px; border-radius: 8px; }
+    </style>
+  </head>
+  <body>
+    <header>
+      <h1 style="margin:0">Database Viewer</h1>
+      <div class="muted">Reading from server API at <code>/api/db/summary</code></div>
+    </header>
+    <main>
+      <div id="loading">Loading database summary…</div>
+      <div id="content" style="display:none"></div>
+      <div id="error" class="error" style="display:none"></div>
+    </main>
+    <script>
+      async function load() {
+        try {
+          const res = await fetch('/api/db/summary');
+          if (!res.ok) throw new Error('HTTP ' + res.status);
+          const data = await res.json();
+          render(data);
+        } catch (e) {
+          document.getElementById('loading').style.display = 'none';
+          const err = document.getElementById('error');
+          err.textContent = 'Failed to load database summary: ' + (e && e.message ? e.message : e);
+          err.style.display = 'block';
+        }
+      }
+
+      function render(data) {
+        document.getElementById('loading').style.display = 'none';
+        const root = document.getElementById('content');
+        root.style.display = 'block';
+        root.innerHTML = '';
+
+        const info = document.createElement('div');
+        info.className = 'card';
+        info.innerHTML = '<strong>DB Path:</strong> <code>' + (data.db_path || '') + '</code>' +
+                         ' <span class="badge">' + (data.tables ? data.tables.length : 0) + ' tables</span>';
+        root.appendChild(info);
+
+        const grid = document.createElement('div');
+        grid.className = 'grid';
+        root.appendChild(grid);
+
+        (data.tables || []).forEach(function(t) {
+          const card = document.createElement('div');
+          card.className = 'card';
+
+          const count = data.summary && data.summary[t] ? data.summary[t].row_count : 0;
+          const title = document.createElement('h3');
+          title.textContent = t + ' (' + count + ')';
+          card.appendChild(title);
+
+          const cols = data.summary && data.summary[t] ? data.summary[t].columns : [];
+          const fks = data.summary && data.summary[t] ? data.summary[t].foreign_keys : [];
+          const sample = data.summary && data.summary[t] ? data.summary[t].sample_rows : [];
+
+          const dCols = document.createElement('details');
+          const sCols = document.createElement('summary');
+          sCols.textContent = 'Columns';
+          dCols.appendChild(sCols);
+          const tableCols = document.createElement('table');
+          const theadCols = document.createElement('thead');
+          theadCols.innerHTML = '<tr><th>name</th><th>type</th><th>notnull</th><th>pk</th><th>default</th></tr>';
+          tableCols.appendChild(theadCols);
+          const tbodyCols = document.createElement('tbody');
+          cols.forEach(function(c) {
+            const tr = document.createElement('tr');
+            tr.innerHTML = '<td>' + (c.name || '') + '</td>' +
+                           '<td>' + (c.type || '') + '</td>' +
+                           '<td>' + (c.notnull || 0) + '</td>' +
+                           '<td>' + (c.pk || 0) + '</td>' +
+                           '<td>' + (c.dflt_value == null ? '' : c.dflt_value) + '</td>';
+            tbodyCols.appendChild(tr);
+          });
+          tableCols.appendChild(tbodyCols);
+          dCols.appendChild(tableCols);
+          card.appendChild(dCols);
+
+          const dFks = document.createElement('details');
+          const sFks = document.createElement('summary');
+          sFks.textContent = 'Foreign Keys';
+          dFks.appendChild(sFks);
+          const tableFks = document.createElement('table');
+          const theadFks = document.createElement('thead');
+          theadFks.innerHTML = '<tr><th>table</th><th>from</th><th>to</th><th>on_update</th><th>on_delete</th></tr>';
+          tableFks.appendChild(theadFks);
+          const tbodyFks = document.createElement('tbody');
+          fks.forEach(function(fk) {
+            const tr = document.createElement('tr');
+            tr.innerHTML = '<td>' + (fk.table || '') + '</td>' +
+                           '<td>' + (fk.from || '') + '</td>' +
+                           '<td>' + (fk.to || '') + '</td>' +
+                           '<td>' + (fk.on_update || '') + '</td>' +
+                           '<td>' + (fk.on_delete || '') + '</td>';
+            tbodyFks.appendChild(tr);
+          });
+          tableFks.appendChild(tbodyFks);
+          dFks.appendChild(tableFks);
+          card.appendChild(dFks);
+
+          const dSample = document.createElement('details');
+          const sSample = document.createElement('summary');
+          sSample.textContent = 'Sample Rows';
+          dSample.appendChild(sSample);
+          const tableSample = document.createElement('table');
+          const theadSample = document.createElement('thead');
+          const sampleCols = cols.map(function(c) { return c.name; });
+          theadSample.innerHTML = '<tr>' + sampleCols.map(function(n){ return '<th>' + n + '</th>'; }).join('') + '</tr>';
+          tableSample.appendChild(theadSample);
+          const tbodySample = document.createElement('tbody');
+          sample.forEach(function(row) {
+            const tr = document.createElement('tr');
+            tr.innerHTML = sampleCols.map(function(n){
+              const v = row[n];
+              return '<td>' + (v == null ? '' : String(v)) + '</td>';
+            }).join('');
+            tbodySample.appendChild(tr);
+          });
+          tableSample.appendChild(tbodySample);
+          dSample.appendChild(tableSample);
+          card.appendChild(dSample);
+
+          grid.appendChild(card);
+        });
+      }
+
+      load();
+    </script>
+  </body>
+  </html>
